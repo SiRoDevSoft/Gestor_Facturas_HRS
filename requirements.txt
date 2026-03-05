@@ -1,0 +1,9 @@
+streamlit
+pdfplumber
+pandas
+openpyxl
+streamlit
+pandas
+# Agregá aquí cualquier otra librería que uses, ej: 
+fpdf2 
+sqlalchemy

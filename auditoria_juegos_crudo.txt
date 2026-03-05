@@ -1,0 +1,40 @@
+HOJA 4/121
+2604409537 Control Empresas 5 GB G 12.028,89
+2604404044 Control Empresas 8 GB G 16.299,48
+2604235935 Control Empresas 5 GB G 12.028,89
+2604225674 Control Empresas 5 GB G 12.028,89
+2604237574 Control Empresas 8 GB G 16.299,49
+2604408667 Comunidad Empresas 12 GB G 23.363,02
+2604577565 Comunidad Empresas 30 GB C 30.424,80
+2604239446 Control Empresas 8 GB G 16.299,48
+2604573592 Comunidad Empresas 12 GB G 23.363,01
+2604670610 Control Empresas 3 GB G 9.550,52
+2604044695 Control Empresas 8 GB G 16.299,48
+2604807040 Control Empresas 8 GB G 16.299,51
+2604601628 Control Empresas 8 GB G 16.299,49
+2604803587 Control Empresas 3 GB G 9.550,51
+2604412218 Comunidad Empresas 12 GB G 29.994,13
+2604603434 Comunidad Empresas 25 GB GG 27.569,66
+2604531711 Control Empresas 3 GB G 9.550,51
+2604391596 Control Empresas 3 GB G 9.550,54
+2604044998 Control Emp y Negocios 1GB 23.387,20
+2604638763 Control Emp y Negocios 1GB 23.387,21
+2604671773 Control Emp y Negocios 1GB 23.387,20
+2604305982 Control Empresas 8 GB G 16.299,49
+2604573639 Control Empresas 5 GB G 12.028,88
+Cargos a la Cuenta 10.002,87
+5266781997 Aplicaciones CSB 36.068,00
+Total Factura Actual 1.816.719,39
+TELEFONIA MOVIL
+Anexo: Suscripción: 0
+. TOTAL SIN
+CONSUMOS VARIABLES AL 11/02 CANTIDAD IMPORTE BONIFICACION IMPUESTOS
+Contenidos Premium
+Suscripción Juegos - 2604531711 (WIDOW) 1. 1.439,56. 1.439,56
+Suscripción Educativa - 2604391596 (JOKERMOBILE) 1. 1.439,56. 1.439,56
+Suscripción Deportes - 2604305982 (JOKERMOBILE) 1. 1.439,56. 1.439,56
+Servicio Tono de espera - 2604498745 1. 579,29. 579,29
+Suscripción Juegos - 2604305982 (WIDOW) 1. 1.489,15. 1.489,15
+Suscripción Deportes - 2604531711 (JOKERMOBILE) 1. 1.489,15. 1.489,15
+7.876,27 7.876,27
+Total TELEFONIA MOVIL 7.876,27

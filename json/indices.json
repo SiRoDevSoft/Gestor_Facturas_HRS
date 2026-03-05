@@ -1,0 +1,21 @@
+{
+  "encabezados_facturacion": {
+    "0": "Línea",
+    "1": "Plan de voz",
+    "2": "Servicios voz",
+    "3": "Pack sms",
+    "4": "Pack datos",
+    "5": "Garantia",
+    "6": "Otros Servicios",
+    "7": "Total cargos fijos",
+    "8": "Voz",
+    "9": "Red Local LDN-LDI",
+    "10": "Mensajes y Contenidos",
+    "11": "Datos",
+    "12": "Roaming",
+    "13": "Otros Cargos",
+    "14": "Total Cargos por variables",
+    "15": "Cargos por única vez",
+    "16": "Total cargos fijos y variables"
+  }
+}

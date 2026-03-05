@@ -1,0 +1,27 @@
+{
+  "estructura_linea": {
+    "identificador": { "indice": 0, "nombre": "Línea" },
+    "grupos": {
+      "cargos_fijos": {
+        "indices": [1, 2, 3, 4, 5, 6],
+        "nombres": ["Plan de voz", "Servicios voz", "Pack sms", "Pack datos", "Garantia", "Otros Servicios"],
+        "total_referencia": { "indice": 7, "nombre": "Total cargos fijos" }
+      },
+      "cargos_variables": {
+        "indices": [8, 9, 10, 11, 12, 13],
+        "nombres": ["Voz", "Red Local LDN-LDI", "Mensajes y Contenidos", "Datos", "Roaming", "Otros Cargos"],
+        "total_referencia": { "indice": 14, "nombre": "Total Cargos por variables" }
+      },
+      "otros": {
+        "indice": 15, 
+        "nombre": "Cargos por única vez",
+        "comportamiento": "sumar_a_variables"
+      },
+      "resultado_final": {
+        "indice": 16,
+        "nombre": "Total cargos fijos y variables",
+        "formula": "indice[7] + indice[14] + indice[15]"
+      }
+    }
+  }
+}
