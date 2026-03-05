@@ -1,3 +1,8 @@
+from pathlib import Path
+from turtle import st
+import streamlit as st
+
+
 def clean_currency(value):
     """
     Transforma formatos de moneda (ej: '1.234,56' o '$ 1.234,56') 
@@ -26,3 +31,9 @@ def clean_currency(value):
     except ValueError:
         # Si el texto no es un número (ej: "Línea"), devolvemos 0.0 para no romper la suma
         return 0.0
+
+
+
+
+
+
