@@ -23,3 +23,10 @@ HIERROSAN_APP/
     ├── v_auditoria.py      # Procesamiento de facturas
     ├── v_abonos.py         # Motor de re-mapeo y emisión de boletos
     └── v_configuracion.py  # Gestión de parámetros del sistema
+---
+## 🌐 Contacto y Desarrollo
+
+**Desarrollado por [SiRoDevSoft](https://sirodevsoft.github.io)** *Soluciones de Software a Medida | Especialistas en Gestión de Datos*
+
+[![Website](https://img.shields.io/badge/Website-SiRoDevSoft-blue?style=for-the-badge&logo=google-chrome)]([https://sirodevsoft.github.io])
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/silviojonrojas)
