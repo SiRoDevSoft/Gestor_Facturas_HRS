@@ -87,41 +87,40 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-           # --- VISOR Y DESCARGA DE PDF ---
+        # --- VISOR Y DESCARGA DE PDF ---
     if "pdf_buffer" in st.session_state:
         buffer_data = st.session_state.pdf_buffer
-        raw_pdf = buffer_data.get('bytes')
+        pdf_bytes = buffer_data.get('bytes')
         
-        # EL FIX DE TIPOS DE DATOS: 
-        # Si es un objeto de memoria (Buffer), extraemos el contenido.
-        # Si ya son bytes, los dejamos pasar.
-        if hasattr(raw_pdf, 'getvalue'):
-            final_pdf_bytes = raw_pdf.getvalue()
-        elif isinstance(raw_pdf, bytes):
-            final_pdf_bytes = raw_pdf
-        else:
-            # Si es un objeto FPDF (común en este error), forzamos la salida a bytes
-            try:
-                final_pdf_bytes = bytes(raw_pdf)
-            except:
-                final_pdf_bytes = b"" # Evita que la app explote si viene vacío
+        # Aseguramos que tengamos los bytes reales
+        if hasattr(pdf_bytes, 'getvalue'):
+            pdf_bytes = pdf_bytes.getvalue()
+
+        # Convertimos a Base64 para el visor
+        base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
 
         with st.container(border=True):
-            st.subheader(f"📄 Comprobante: {buffer_data['grupo']}")
+            st.subheader(f"📄 Vista Previa: {buffer_data['grupo']}")
             
-            # Botón de Descarga con los BYTES CORRECTOS
+            # Botón de descarga (Siempre como respaldo)
             st.download_button(
-                label="DESCARGAR PDF DE COBRO",
-                data=final_pdf_bytes,
+                label="📥 Descargar PDF",
+                data=pdf_bytes,
                 file_name=f"Comprobante_{buffer_data['grupo']}.pdf",
-                mime="application/pdf",
-                key="btn_descarga_definitiva",
-                use_container_width=True
+                mime="application/pdf"
             )
+
+            # Visor con etiqueta <object> (Más compatible con Streamlit Cloud)
+            pdf_display = f'<object data="data:application/pdf;base64,{base64_pdf}" type="application/pdf" width="100%" height="600px">\
+                            <p>Tu navegador no puede mostrar el PDF, por favor descárgalo.</p>\
+                            </object>'
             
-            if st.button("CERRAR VISOR", use_container_width=True):
+            st.markdown(pdf_display, unsafe_allow_html=True)
+            
+            if st.button("Cerrar Visor"):
                 del st.session_state.pdf_buffer
                 st.rerun()
+
 
 
     # --- RENDERIZADO DE TARJETAS ---
