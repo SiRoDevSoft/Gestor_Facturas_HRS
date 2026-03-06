@@ -87,39 +87,51 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-     # --- DESCARGA DE PDF (Única y Directa) ---
+    
+    
+    
+        # --- DESCARGA DE PDF (Única y Directa) ---
     if "pdf_buffer" in st.session_state:
-        buffer = st.session_state.pdf_buffer
-        pdf_data = buffer.get('bytes')
+        buffer_data = st.session_state.pdf_buffer
+        raw_pdf = buffer_data.get('bytes')
         
-        # Aseguramos bytes puros para que Streamlit no rebote
-        if hasattr(pdf_data, 'getvalue'):
-            pdf_data = pdf_data.getvalue()
-        
-        # Armamos el nombre: "03-2026_CORREA.pdf" (reemplazando / por - para evitar errores de ruta)
-        nombre_archivo = f"{mes}-{anio}_{buffer['grupo']}.pdf"
+        # EXTRACCIÓN FORZADA DE BYTES (Esto elimina el unsupported_error)
+        if hasattr(raw_pdf, 'getvalue'):
+            pdf_final = raw_pdf.getvalue()
+        elif isinstance(raw_pdf, bytes):
+            pdf_final = raw_pdf
+        else:
+            # Caso extremo: si es un objeto FPDF u otro, intentamos convertir
+            try:
+                pdf_final = bytes(raw_pdf)
+            except:
+                pdf_final = b""
+
+        # Nombre del archivo dinámico
+        nombre_archivo = f"{mes}-{anio}_{buffer_data['grupo']}.pdf"
 
         with st.container(border=True):
-            st.subheader(f"📄 Comprobante Generado: {buffer['grupo']}")
+            st.subheader(f"📄 Comprobante Generado: {buffer_data['grupo']}")
             
             c_dl, c_cl = st.columns([0.5, 0.5])
             
-            # BOTÓN DE DESCARGA NATIVO
-            c_dl.download_button(
-                label=f"📥 DESCARGAR {nombre_archivo}",
-                data=pdf_data,
-                file_name=nombre_archivo,
-                mime="application/pdf",
-                key="btn_descarga_final_renombrado",
-                use_container_width=True,
-                type="primary"
-            )
+            # BOTÓN DE DESCARGA NATIVO (Solo con pdf_final verificado)
+            if pdf_final:
+                c_dl.download_button(
+                    label=f"DESCARGAR {nombre_archivo}",
+                    data=pdf_final,
+                    file_name=nombre_archivo,
+                    mime="application/pdf",
+                    key="btn_descarga_final_ok",
+                    use_container_width=True,
+                    type="primary"
+                )
             
             if c_cl.button("CERRAR", key="btn_cerrar_final_limpio", use_container_width=True):
                 del st.session_state.pdf_buffer
                 st.rerun()
-            
-            st.success(f"El archivo '{nombre_archivo}' está listo para descargar.")
+
+
 
 
     # --- RENDERIZADO DE TARJETAS ---
