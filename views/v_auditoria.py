@@ -128,7 +128,11 @@ def render_auditoria():
 
             st.subheader(f"📋 Detalle de {len(resultado['datos'])} Abonados")
             df = pd.DataFrame(resultado["datos"])
-            df_display = df[["linea", "nombre", "grupo", "categoria", "total_fijo", "total_variable", "juegos_extra", "total_neto"]]
+             # Columnas que queremos mostrar
+            cols_deseadas = ["linea", "nombre", "grupo", "categoria", "total_fijo", "total_variable", "juegos_extra", "total_neto"]
+            # Filtramos solo las que realmente existen en el PDF procesado para evitar el KeyError
+            cols_reales = [c for c in cols_deseadas if c in df.columns]
+            df_display = df[cols_reales]
             st.dataframe(df_display, use_container_width=True, hide_index=True)
 
             if resultado["resumen_impositivo"]:
