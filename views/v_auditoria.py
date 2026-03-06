@@ -16,7 +16,7 @@ def render_auditoria():
     
     with col_tit:
         st.header("Auditoría de Factura Movistar")
-    
+     
     with col_logo:
         # Ruta al logo de movistar (asegúrate de tenerlo en assets)
         logo_movistar = os.path.join("assets", "logo-Movistar.png") 
