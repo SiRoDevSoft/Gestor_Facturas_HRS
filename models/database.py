@@ -7,16 +7,18 @@ class DatabaseManager:
 
     def __init__(self):
         try:
-            DATABASE_URL = st.secrets["DATABASE_URL"]
+            # Limpiamos posibles espacios en blanco de la URL
+            url = st.secrets["DATABASE_URL"].strip()
+            
             self.engine = create_engine(
-                DATABASE_URL,
+                url,
                 pool_pre_ping=True,
-                pool_size=3,
-                max_overflow=0
+                pool_recycle=1800
             )
-            # Prueba de fuego
+            
             with self.engine.connect() as conn:
-                st.success("¡Conexión IPv4 exitosa!")
+                pass
+                
             self._create_tables()
         except Exception as e:
             st.error(f"🚨 Error de conexión real: {str(e)}")
