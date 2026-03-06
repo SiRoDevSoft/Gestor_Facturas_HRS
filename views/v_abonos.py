@@ -87,29 +87,39 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-    # --- VISOR DE PDF ---
+        # --- VISOR Y DESCARGA DE PDF (Líneas 90-115 aprox) ---
     if "pdf_buffer" in st.session_state:
         buffer = st.session_state.pdf_buffer
+        
+        # Validamos que existan bytes para descargar
+        pdf_data = buffer.get('bytes')
+        
         with st.container(border=True):
             c1, c2, c3 = st.columns([0.6, 0.2, 0.2])
             c1.subheader(f"Comprobante: {buffer['grupo']}")
             
-            # Botón de Descarga Nativa (Solución definitiva al círculo rojo)
-            c2.download_button(
-                label="📥 Descargar PDF",
-                data=buffer['bytes'],
-                file_name=f"Comprobante_{buffer['grupo']}_{mes}_{anio}.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
+            if pdf_data:
+                c2.download_button(
+                    label="📥 Descargar",
+                    data=pdf_data,
+                    file_name=f"Comprobante_{buffer['grupo']}.pdf",
+                    mime="application/pdf",
+                    key="btn_download_final",
+                    use_container_width=True
+                )
             
-            if c3.button("Cerrar Visor", use_container_width=True):
+            if c3.button("Cerrar Visor", key="btn_close_visor", use_container_width=True):
                 del st.session_state.pdf_buffer
                 st.rerun()
-                
-            base64_pdf = base64.b64encode(buffer['bytes']).decode('utf-8')
-            pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe>'
-            st.markdown(pdf_display, unsafe_allow_html=True)
+            
+            # Visor embebido opcional
+            if pdf_data:
+                try:
+                    base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+                    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe>'
+                    st.markdown(pdf_display, unsafe_allow_html=True)
+                except Exception:
+                    st.warning("El visor no es compatible con este navegador, use el botón Descargar.")
 
     # --- RENDERIZADO DE TARJETAS ---
     # Ahora usamos la columna 'grupo' que ya fue actualizada por el JSON
