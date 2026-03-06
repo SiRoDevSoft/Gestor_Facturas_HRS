@@ -1,5 +1,6 @@
 import json
 import re
+import streamlit as st
 from core.extractor import PDFExtractor
 from core.validator import FinancialValidator
 from utils.helpers import clean_currency
@@ -30,6 +31,12 @@ class BillingProcessor:
         # --- 1. PROCESAR ABONADOS ---
         for line in lines_p:
             partes = line.split()
+            # DIAGNÓSTICO: Solo imprimimos si detecta una línea conocida 
+            # para ver cuántas columnas tiene en el servidor
+            if partes and partes[0] in self.config_lineas:
+                st.write(f"DEBUG: Línea {partes[0]} detectada con {len(partes)} columnas.")
+                # st.write(partes) # Descomenta esto si quieres ver la línea completa en la web
+            
             if len(partes) == 17 and partes[0] in self.config_lineas:
                 nro = partes[0]
                 es_valida, t_fijo, t_neto = FinancialValidator.validate_row_integrity(partes)
