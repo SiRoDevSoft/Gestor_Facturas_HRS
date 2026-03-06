@@ -8,13 +8,16 @@ from utils.helpers import clean_currency
 
 class BillingProcessor:
     def __init__(self, config_path=None):
-        # Usamos ruta absoluta para evitar fallos en el servidor
+        # Buscamos la carpeta raíz del proyecto
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
         if config_path is None:
-            config_path = os.path.join(os.path.dirname(__file__), '..', 'json', 'config_lineas.json')
+            # Forzamos la ruta absoluta desde la raíz
+            config_path = os.path.join(BASE_DIR, 'json', 'config_lineas.json')
         
         self.config_lineas = self._load_json(config_path)
         self.extractor = PDFExtractor()
-        self.LINEA_FIN_PRINCIPAL = "5266781997" 
+        self.LINEA_FIN_PRINCIPAL = "5266781997"
 
     def _load_json(self, path):
         try:
