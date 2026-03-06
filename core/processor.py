@@ -1,147 +1,3 @@
-# import json
-# import re
-# from core.extractor import PDFExtractor
-# from core.validator import FinancialValidator
-# from utils.helpers import clean_currency
-
-# class BillingProcessor:
-#     def __init__(self, config_path='json/config_lineas.json'):
-#         self.config_lineas = self._load_json(config_path)
-#         self.extractor = PDFExtractor()
-#         # Línea de corte establecida por el usuario
-#         self.LINEA_FIN_PRINCIPAL = "5266781997" 
-
-#     def _load_json(self, path):
-#         try:
-#             with open(path, 'r', encoding='utf-8') as f:
-#                 return json.load(f)
-#         except Exception: 
-#             return {}
-
-#     def process_invoice(self, pdf_principal, pdf_juegos=None, otros_cargos_manual=0.0):
-#         datos_validados = {}
-#         lines_p, _ = self.extractor.fetch_raw_data(pdf_principal)
-        
-#         # --- 1. PROCESAR CUADRO DE ABONADOS (PÁG 14-16) ---
-#         for line in lines_p:
-#             partes = line.split()
-#             if len(partes) == 17 and partes[0] in self.config_lineas:
-#                 nro = partes[0]
-#                 es_valida, t_fijo, t_neto = FinancialValidator.validate_row_integrity(partes)
-                
-#                 if es_valida:
-#                     info = self.config_lineas[nro]
-#                     datos_validados[nro] = {
-#                         "linea": nro,
-#                         "nombre": info.get("nombre", "S/D"),
-#                         "categoria": info.get("grupo", "VARIOS"),
-#                         "total_fijo": t_fijo,
-#                         "total_variable": round(t_neto - t_fijo, 2),
-#                         "juegos_extra": 0.0,
-#                         "total_neto": t_neto
-#                     }
-                
-#                 if nro == self.LINEA_FIN_PRINCIPAL:
-#                     break
-
-#         # --- 2. PROCESAR ANEXO DE JUEGOS ---
-#         if pdf_juegos:
-#             lines_j, _ = self.extractor.fetch_raw_data(pdf_juegos)
-#             for line in lines_j:
-#                 if "Suscripción" in line or "Servicio Tono" in line:
-#                     match_nro = re.search(r'(\d{10})', line)
-#                     if match_nro:
-#                         nro_det = match_nro.group(1)
-#                         if nro_det in datos_validados:
-#                             monto = clean_currency(line.split()[-1])
-#                             datos_validados[nro_det]["juegos_extra"] += monto
-#                             datos_validados[nro_det]["total_neto"] = round(datos_validados[nro_det]["total_neto"] + monto, 2)
-
-#         # Cálculo de Netos
-#         lista_final = list(datos_validados.values())
-#         neto_abonados_juegos = sum(d['total_neto'] for d in lista_final)
-#         # Sumamos los cargos manuales (Mora/Reconexión) al neto para la auditoría
-#         neto_total_con_ajustes = round(neto_abonados_juegos + otros_cargos_manual, 2)
-
-#         # --- 3. RESUMEN IMPOSITIVO Y AUDITORÍA FINAL ---
-#         resumen_tax, aud_fiscal = self._extract_and_audit_tax(lines_p, neto_total_con_ajustes)
-
-#         return {
-#             "datos": lista_final,
-#             "resumen_impositivo": resumen_tax,
-#             "auditoria_fiscal": aud_fiscal,
-#             "total_principal": round(sum(d['total_fijo'] + d['total_variable'] for d in lista_final), 2),
-#             "total_juegos": round(sum(d['juegos_extra'] for d in lista_final), 2),
-#             "total_final": neto_total_con_ajustes 
-#         }
-
-#     def _extract_and_audit_tax(self, lines, neto_sistema):
-#         resumen = []
-#         en_seccion = False
-#         s_iva_calculado = 0.0
-        
-#         for line in lines:
-#             if "RESUMEN IMPOSITIVO" in line:
-#                 en_seccion = True
-#                 continue
-#             if not en_seccion: continue
-            
-#             partes = line.split()
-#             if not partes: continue
-
-#             # Percepciones e Internos
-#             if any(k in line for k in ["Ingresos Brutos", "Ley 27.430", "Percepción I.V.A."]):
-#                 valor = clean_currency(partes[-1])
-#                 resumen.append({
-#                     "Concepto": " ".join(partes[:-1]),
-#                     "Base Imponible": valor, "IVA": 0.0, "Total": 0.0, "Total Factura": 0.0
-#                 })
-
-#             # Filas de IVA
-#             elif "IVA" in line and ("21,00%" in line or "27,00%" in line):
-#                 base = clean_currency(partes[2])
-#                 iva_v = clean_currency(partes[3])
-#                 s_iva_calculado += iva_v
-#                 resumen.append({
-#                     "Concepto": f"{partes[0]} {partes[1]}",
-#                     "Base Imponible": base, "IVA": iva_v, "Total": 0.0, "Total Factura": 0.0
-#                 })
-
-#             # Fila de Cierre "Totales"
-#             elif "Totales" in partes[0]:
-#                 iva_pdf = clean_currency(partes[1])
-#                 tot_impuestos_pdf = clean_currency(partes[2])
-                
-#                 # ECUACIÓN DE CIERRE: Neto Sistema + Impuestos PDF
-#                 total_final_calculado = round(neto_sistema + tot_impuestos_pdf, 2)
-                
-#                 # Búsqueda del TOTAL escrito en el PDF para comparar
-#                 f_pdf_leido = 0.0
-#                 for i, p in enumerate(partes):
-#                     if "TOTAL" in p.upper() and (i+1) < len(partes):
-#                         f_pdf_leido = clean_currency(partes[i+1])
-#                         break
-                
-#                 resumen.append({
-#                     "Concepto": "Totales", 
-#                     "Base Imponible": 0.0,
-#                     "IVA": iva_pdf, 
-#                     "Total": tot_impuestos_pdf, 
-#                     "Total Factura": total_final_calculado
-#                 })
-                
-#                 aud_fiscal = {
-#                     "iva_ok": round(s_iva_calculado, 2) == iva_pdf,
-#                     "match_factura": total_final_calculado == f_pdf_leido,
-#                     "iva_pdf": iva_pdf,
-#                     "factura_pdf": f_pdf_leido,
-#                     "calculo_sistema": total_final_calculado
-#                 }
-#                 break 
-                
-#         return resumen, aud_fiscal
-################################################################################################
-
 import json
 import re
 from core.extractor import PDFExtractor
@@ -163,6 +19,12 @@ class BillingProcessor:
 
     def process_invoice(self, pdf_principal, pdf_juegos=None, otros_cargos_manual=0.0, juegos_manuales=None):
         datos_validados = {}
+        
+        # --- MODIFICACIÓN PARA STREAMLIT CLOUD ---
+        # Aseguramos que el puntero del archivo esté al inicio
+        if hasattr(pdf_principal, 'seek'):
+            pdf_principal.seek(0)
+            
         lines_p, _ = self.extractor.fetch_raw_data(pdf_principal)
         
         # --- 1. PROCESAR ABONADOS ---
@@ -186,6 +48,10 @@ class BillingProcessor:
 
         # --- 2. PROCESAR JUEGOS (PDF) ---
         if pdf_juegos:
+            # Rebobinamos también el anexo de juegos
+            if hasattr(pdf_juegos, 'seek'):
+                pdf_juegos.seek(0)
+                
             lines_j, _ = self.extractor.fetch_raw_data(pdf_juegos)
             for line in lines_j:
                 if any(x in line for x in ["Suscripción", "Servicio Tono"]):
@@ -238,7 +104,6 @@ class BillingProcessor:
             "error_lectura": True
         }
 
-        
         content_full = " ".join(lines)
         if "RESUMEN IMPOSITIVO" not in content_full:
             return resumen, aud_fiscal
