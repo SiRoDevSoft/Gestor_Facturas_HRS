@@ -5,9 +5,6 @@ from views.v_abonos import render_abonos
 from views.v_configuracion import render_configuracion
 from views.v_consultas import render_consultas 
 
-st.write(st.secrets)
-# 1. CONFIGURACIÓN DE PÁGINA (Única y al principio)
-# icon_path = os.path.join("assets", "logo.ico")
 
 st.set_page_config(
     page_title="Hierrosan ERP", 
