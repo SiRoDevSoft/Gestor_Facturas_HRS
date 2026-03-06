@@ -87,39 +87,53 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-        # --- VISOR Y DESCARGA DE PDF ---
+        # --- VISOR Y DESCARGA DE PDF 
     if "pdf_buffer" in st.session_state:
         buffer_data = st.session_state.pdf_buffer
-        pdf_bytes = buffer_data.get('bytes')
+        raw_content = buffer_data.get('bytes')
         
-        # Aseguramos que tengamos los bytes reales
-        if hasattr(pdf_bytes, 'getvalue'):
-            pdf_bytes = pdf_bytes.getvalue()
+        
+        final_pdf = b""
+        try:
+            if isinstance(raw_content, bytes):
+                final_pdf = raw_content
+            elif hasattr(raw_content, 'getvalue'):
+                final_pdf = raw_content.getvalue()
+            elif hasattr(raw_content, 'output'): 
+                final_pdf = raw_content.output(dest='S').encode('latin-1')
+            else:
+                final_pdf = bytes(raw_content)
+        except Exception as e:
+            st.error(f"Error procesando el PDF: {e}")
 
-        # Convertimos a Base64 para el visor
-        base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
+        if final_pdf:
+            with st.container(border=True):
+                st.subheader(f"📄 Comprobante: {buffer_data['grupo']}")
+                
+                c_dl, c_cl = st.columns([0.5, 0.5])
+                
+                
+                c_dl.download_button(
+                    label=" DESCARGAR PDF",
+                    data=final_pdf,
+                    file_name=f"Comprobante_{buffer_data['grupo']}.pdf",
+                    mime="application/pdf",
+                    key="dl_final_ok",
+                    use_container_width=True
+                )
+                
+                if c_cl.button("CERRAR VISOR", use_container_width=True):
+                    del st.session_state.pdf_buffer
+                    st.rerun()
 
-        with st.container(border=True):
-            st.subheader(f"📄 Vista Previa: {buffer_data['grupo']}")
-            
-            # Botón de descarga (Siempre como respaldo)
-            st.download_button(
-                label="📥 Descargar PDF",
-                data=pdf_bytes,
-                file_name=f"Comprobante_{buffer_data['grupo']}.pdf",
-                mime="application/pdf"
-            )
+                # Visor Base64 (Opcional, si el navegador lo permite)
+                try:
+                    b64 = base64.b64encode(final_pdf).decode('utf-8')
+                    pdf_display = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="600" type="application/pdf"></iframe>'
+                    st.markdown(pdf_display, unsafe_allow_html=True)
+                except:
+                    pass
 
-            # Visor con etiqueta <object> (Más compatible con Streamlit Cloud)
-            pdf_display = f'<object data="data:application/pdf;base64,{base64_pdf}" type="application/pdf" width="100%" height="600px">\
-                            <p>Tu navegador no puede mostrar el PDF, por favor descárgalo.</p>\
-                            </object>'
-            
-            st.markdown(pdf_display, unsafe_allow_html=True)
-            
-            if st.button("Cerrar Visor"):
-                del st.session_state.pdf_buffer
-                st.rerun()
 
 
 
