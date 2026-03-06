@@ -5,21 +5,23 @@ from sqlalchemy import create_engine, text
 
 class DatabaseManager:
 
-   def __init__(self):
-    try:
-        DATABASE_URL = st.secrets["DATABASE_URL"]
-        self.engine = create_engine(
-            DATABASE_URL,
-            pool_pre_ping=True,
-            connect_args={'connect_timeout': 10}
-        )
-        # Probamos conexión inmediata
-        with self.engine.connect() as conn:
-            pass
-        self._create_tables()
-    except Exception as e:
-        st.error(f"Error de conexión real: {str(e)}") # Esto saltará el redactado de Streamlit
-        raise e
+    def __init__(self):
+        try:
+            DATABASE_URL = st.secrets["DATABASE_URL"]
+            self.engine = create_engine(
+                DATABASE_URL,
+                pool_pre_ping=True,
+                pool_size=3,
+                max_overflow=0
+            )
+            # Prueba de fuego
+            with self.engine.connect() as conn:
+                st.success("¡Conexión IPv4 exitosa!")
+            self._create_tables()
+        except Exception as e:
+            st.error(f"🚨 Error de conexión real: {str(e)}")
+            raise e
+
 
     def _get_connection(self):
         return self.engine.connect()
