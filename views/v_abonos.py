@@ -87,54 +87,39 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-        # --- VISOR Y DESCARGA DE PDF 
+     # --- DESCARGA DE PDF (Única y Directa) ---
     if "pdf_buffer" in st.session_state:
-        buffer_data = st.session_state.pdf_buffer
-        raw_content = buffer_data.get('bytes')
+        buffer = st.session_state.pdf_buffer
+        pdf_data = buffer.get('bytes')
         
+        # Aseguramos bytes puros para que Streamlit no rebote
+        if hasattr(pdf_data, 'getvalue'):
+            pdf_data = pdf_data.getvalue()
         
-        final_pdf = b""
-        try:
-            if isinstance(raw_content, bytes):
-                final_pdf = raw_content
-            elif hasattr(raw_content, 'getvalue'):
-                final_pdf = raw_content.getvalue()
-            elif hasattr(raw_content, 'output'): 
-                final_pdf = raw_content.output(dest='S').encode('latin-1')
-            else:
-                final_pdf = bytes(raw_content)
-        except Exception as e:
-            st.error(f"Error procesando el PDF: {e}")
+        # Armamos el nombre: "03-2026_CORREA.pdf" (reemplazando / por - para evitar errores de ruta)
+        nombre_archivo = f"{mes}-{anio}_{buffer['grupo']}.pdf"
 
-        if final_pdf:
-            with st.container(border=True):
-                st.subheader(f"📄 Comprobante: {buffer_data['grupo']}")
-                
-                c_dl, c_cl = st.columns([0.5, 0.5])
-                
-                
-                c_dl.download_button(
-                    label=" DESCARGAR PDF",
-                    data=final_pdf,
-                    file_name=f"Comprobante_{buffer_data['grupo']}.pdf",
-                    mime="application/pdf",
-                    key="dl_final_ok",
-                    use_container_width=True
-                )
-                
-                if c_cl.button("CERRAR VISOR", use_container_width=True):
-                    del st.session_state.pdf_buffer
-                    st.rerun()
-
-                # Visor Base64 (Opcional, si el navegador lo permite)
-                try:
-                    b64 = base64.b64encode(final_pdf).decode('utf-8')
-                    pdf_display = f'<iframe src="data:application/pdf;base64,{b64}" width="100%" height="600" type="application/pdf"></iframe>'
-                    st.markdown(pdf_display, unsafe_allow_html=True)
-                except:
-                    pass
-
-
+        with st.container(border=True):
+            st.subheader(f"📄 Comprobante Generado: {buffer['grupo']}")
+            
+            c_dl, c_cl = st.columns([0.5, 0.5])
+            
+            # BOTÓN DE DESCARGA NATIVO
+            c_dl.download_button(
+                label=f"📥 DESCARGAR {nombre_archivo}",
+                data=pdf_data,
+                file_name=nombre_archivo,
+                mime="application/pdf",
+                key="btn_descarga_final_renombrado",
+                use_container_width=True,
+                type="primary"
+            )
+            
+            if c_cl.button("CERRAR", key="btn_cerrar_final_limpio", use_container_width=True):
+                del st.session_state.pdf_buffer
+                st.rerun()
+            
+            st.success(f"El archivo '{nombre_archivo}' está listo para descargar.")
 
 
     # --- RENDERIZADO DE TARJETAS ---
