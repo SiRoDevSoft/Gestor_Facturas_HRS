@@ -3,6 +3,7 @@ import pandas as pd
 import base64
 import json
 import os
+from sqlalchemy import text
 from models.database import DatabaseManager
 from core.pdf_generator import generar_pdf_bytes
 
@@ -28,29 +29,32 @@ def render_abonos():
     factura_id = st.session_state.get('last_factura_id')
     mes, anio = None, None
 
-    # Lógica de recuperación de factura (Mantenemos tu estructura)
+        # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
     if not factura_id:
         periodos = db.get_periodos_disponibles()
         if periodos:
             ultimo_p = periodos[0]
             mes, anio = ultimo_p.split('/')
             with db._get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute(
-                    "SELECT id FROM facturas WHERE periodo_mes = ? AND periodo_anio = ? ORDER BY id DESC LIMIT 1", 
-                    (mes, anio)
+                # Cambiamos cursor.execute por conn.execute (Sintaxis SQLAlchemy)
+                result = conn.execute(
+                    text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+                    {"mes": mes, "anio": anio}
                 )
-                row = cursor.fetchone()
+                row = result.fetchone()
                 if row:
                     factura_id = row[0]
                     st.session_state.last_factura_id = factura_id
     else:
         with db._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = ?", (factura_id,))
-            row = cursor.fetchone()
+            result = conn.execute(
+                text("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = :id"), 
+                {"id": factura_id}
+            )
+            row = result.fetchone()
             if row:
                 mes, anio = row[0], row[1]
+
 
     if mes and anio:
         col_tit, col_logo = st.columns([3, 1])
