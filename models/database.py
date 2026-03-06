@@ -12,7 +12,7 @@ class DatabaseManager:
         DATABASE_URL,
         pool_pre_ping=True)
         self._create_tables()
-        st.write(st.secrets)
+        # st.write(st.secrets)
 
     def _get_connection(self):
         return self.engine.connect()
