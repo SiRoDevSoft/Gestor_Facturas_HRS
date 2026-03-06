@@ -87,39 +87,45 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-        # --- VISOR Y DESCARGA DE PDF (Líneas 90-115 aprox) ---
+        # --- VISOR Y DESCARGA DE PDF ---
     if "pdf_buffer" in st.session_state:
         buffer = st.session_state.pdf_buffer
         
-        # Validamos que existan bytes para descargar
+        # Obtenemos los bytes. Si generar_pdf_bytes devuelve un buffer, usamos getvalue()
         pdf_data = buffer.get('bytes')
         
+        # ASEGURAMOS QUE SEAN BYTES (Este es el arreglo para el error de Streamlit)
+        if hasattr(pdf_data, 'getvalue'):
+            pdf_data = pdf_data.getvalue()
+        elif not isinstance(pdf_data, bytes):
+            # Si por alguna razón es un string o None, esto evita que la app explote
+            pdf_data = bytes(str(pdf_data), 'utf-8')
+
         with st.container(border=True):
             c1, c2, c3 = st.columns([0.6, 0.2, 0.2])
             c1.subheader(f"Comprobante: {buffer['grupo']}")
             
-            if pdf_data:
-                c2.download_button(
-                    label="📥 Descargar",
-                    data=pdf_data,
-                    file_name=f"Comprobante_{buffer['grupo']}.pdf",
-                    mime="application/pdf",
-                    key="btn_download_final",
-                    use_container_width=True
-                )
+            # Botón de Descarga Seguro
+            c2.download_button(
+                label="Descargar PDF",
+                data=pdf_data,
+                file_name=f"Comprobante_{buffer['grupo']}.pdf",
+                mime="application/pdf",
+                key="dl_btn_final"
+            )
             
-            if c3.button("Cerrar Visor", key="btn_close_visor", use_container_width=True):
+            if c3.button("Cerrar Visor", key="close_v_final"):
                 del st.session_state.pdf_buffer
                 st.rerun()
-            
-            # Visor embebido opcional
-            if pdf_data:
-                try:
-                    base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe>'
-                    st.markdown(pdf_display, unsafe_allow_html=True)
-                except Exception:
-                    st.warning("El visor no es compatible con este navegador, use el botón Descargar.")
+
+            # Mostramos el visor solo si el navegador lo permite
+            try:
+                base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+                pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf">'
+                st.markdown(pdf_display, unsafe_allow_html=True)
+            except:
+                st.info("Vista previa no disponible. Use el botón de descarga.")
+
 
     # --- RENDERIZADO DE TARJETAS ---
     # Ahora usamos la columna 'grupo' que ya fue actualizada por el JSON
