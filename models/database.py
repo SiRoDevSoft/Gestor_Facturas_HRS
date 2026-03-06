@@ -56,42 +56,62 @@ class DatabaseManager:
             """))
 
     def registrar_consolidacion(self, resultado, margen_aplicado, total_factura_movistar):
-        """Guarda la factura y sus detalles en una sola transacción"""
-        with self.engine.begin() as conn:
-            af = resultado["auditoria_fiscal"]
-            
-            # 1. Insertar Factura y obtener el ID generado (RETURNING id)
-            query_f = text("""
-                INSERT INTO facturas (periodo_mes, periodo_anio, fecha_carga, total_neto_movistar, total_iva, total_final_pdf, markup_porcentaje)
-                VALUES (:mes, :anio, :fecha, :neto, :iva, :total, :markup)
-                RETURNING id
-            """)
-            
-            result = conn.execute(query_f, {
-                "mes": resultado['periodo_mes'], 
-                "anio": resultado['periodo_anio'],
-                "fecha": resultado['fecha_manual'], 
-                "neto": resultado['total_final'],
-                "iva": af['iva_pdf'], 
-                "total": total_factura_movistar, 
-                "markup": margen_aplicado
-            })
-            
-            factura_id = result.scalar()
+        try:
+            with self.engine.begin() as conn:
+                af = resultado["auditoria_fiscal"]
+                
+                # 1. Insertar Factura
+                query_f = text("""
+                    INSERT INTO facturas (
+                        periodo_mes, periodo_anio, fecha_carga, 
+                        total_neto_movistar, total_iva, total_final_pdf, markup_porcentaje
+                    )
+                    VALUES (:mes, :anio, :fecha, :neto, :iva, :total, :markup)
+                    RETURNING id
+                """)
+                
+                params_f = {
+                    "mes": str(resultado['periodo_mes']), 
+                    "anio": str(resultado['periodo_anio']),
+                    "fecha": str(resultado['fecha_manual']), 
+                    "neto": float(resultado['total_final']),
+                    "iva": float(af['iva_pdf']), 
+                    "total": float(total_factura_movistar), 
+                    "markup": float(margen_aplicado)
+                }
+                
+                result = conn.execute(query_f, params_f)
+                factura_id = result.scalar()
 
-            # 2. Insertar Detalle de cada línea
-            for d in resultado['datos']:
-                precio_markup = round(d['total_neto'] * (1 + margen_aplicado / 100), 2)
-                conn.execute(text("""
-                    INSERT INTO consumos_detalle (factura_id, linea, nombre, grupo, categoria, costo_fijo, costo_variable, costo_juegos, neto_movistar, precio_con_markup)
-                    VALUES (:f_id, :linea, :nom, :gru, :cat, :fijo, :var, :jue, :neto, :markup)
-                """), {
-                    "f_id": factura_id, "linea": d['linea'], "nom": d['nombre'], "gru": d['grupo'],
-                    "cat": d['categoria'], "fijo": d['total_fijo'], "var": d['total_variable'],
-                    "jue": d['juegos_extra'], "neto": d['total_neto'], "markup": precio_markup
-                })
-            
-            return factura_id
+                # 2. Insertar Detalle
+                for d in resultado['datos']:
+                    precio_markup = round(float(d['total_neto']) * (1 + float(margen_aplicado) / 100), 2)
+                    query_d = text("""
+                        INSERT INTO consumos_detalle (
+                            factura_id, linea, nombre, grupo, categoria, 
+                            costo_fijo, costo_variable, costo_juegos, neto_movistar, precio_con_markup
+                        )
+                        VALUES (:f_id, :linea, :nom, :gru, :cat, :fijo, :var, :jue, :neto, :markup)
+                    """)
+                    
+                    conn.execute(query_d, {
+                        "f_id": int(factura_id), 
+                        "linea": str(d['linea']), 
+                        "nom": str(d['nombre']), 
+                        "gru": str(d['grupo']),
+                        "cat": str(d['categoria']), 
+                        "fijo": float(d['total_fijo']), 
+                        "var": float(d['total_variable']),
+                        "jue": float(d['juegos_extra']), 
+                        "neto": float(d['total_neto']), 
+                        "markup": float(precio_markup)
+                    })
+                
+                return factura_id
+        except Exception as e:
+            st.error(f"❌ Error al guardar en DB: {str(e)}")
+            raise e
+
 
     def get_periodos_disponibles(self):
         """Obtiene la lista de periodos para el selector de consultas"""
