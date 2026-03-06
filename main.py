@@ -7,11 +7,11 @@ from views.v_consultas import render_consultas
 
 
 # 1. CONFIGURACIÓN DE PÁGINA (Única y al principio)
-icon_path = os.path.join("assets", "logo.ico")
+# icon_path = os.path.join("assets", "logo.ico")
 
 st.set_page_config(
     page_title="Hierrosan ERP", 
-    page_icon=icon_path, 
+    # page_icon=icon_path, 
     layout="wide",
     initial_sidebar_state="expanded"
 )
