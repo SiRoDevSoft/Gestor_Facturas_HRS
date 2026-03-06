@@ -1,0 +1,22 @@
+{
+    "GRUPOS_VALIDOS": [
+        "EMPRESA",
+        "KOPRAM",
+        "LUCARELLI",
+        "CORREA",
+        "PETISO",
+        "PERRET",
+        "TERCEROS_HRS",
+        "PIEDECASAS"
+    ],
+    "CATEGORIAS_VALIDAS": [
+        "VENTAS",
+        "GERENCIA",
+        "PATIO",
+        "ADMINISTRACION",
+        "REPARTO",
+        "EXTERNOS",
+        "BAJA",
+        "TERCEROS"
+    ]
+}

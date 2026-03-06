@@ -4,8 +4,7 @@ __pycache__/
 
 # Datos (No queremos subir la historia vieja, solo la estructura)
 *.db
-json/config_lineas.json
-json/mapeos.json
+
 
 # Entorno virtual
 venv/
