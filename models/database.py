@@ -7,14 +7,18 @@ class DatabaseManager:
 
     def __init__(self):
         DATABASE_URL = st.secrets["DATABASE_URL"]
-        self.engine = create_engine(DATABASE_URL)
+        # self.engine = create_engine(DATABASE_URL)
+        self.engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True)
         self._create_tables()
+        st.write(st.secrets)
 
     def _get_connection(self):
         return self.engine.connect()
 
     def _create_tables(self):
-        with self._get_connection() as conn:
+        with self.engine.begin() as conn:
 
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS facturas (
