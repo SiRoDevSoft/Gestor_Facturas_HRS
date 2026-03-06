@@ -87,44 +87,41 @@ def render_abonos():
     # Si la línea no está en el JSON, la mandamos a "SIN ASIGNAR"
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
-        # --- VISOR Y DESCARGA DE PDF ---
+           # --- VISOR Y DESCARGA DE PDF ---
     if "pdf_buffer" in st.session_state:
-        buffer = st.session_state.pdf_buffer
+        buffer_data = st.session_state.pdf_buffer
+        raw_pdf = buffer_data.get('bytes')
         
-        # Obtenemos los bytes. Si generar_pdf_bytes devuelve un buffer, usamos getvalue()
-        pdf_data = buffer.get('bytes')
-        
-        # ASEGURAMOS QUE SEAN BYTES (Este es el arreglo para el error de Streamlit)
-        if hasattr(pdf_data, 'getvalue'):
-            pdf_data = pdf_data.getvalue()
-        elif not isinstance(pdf_data, bytes):
-            # Si por alguna razón es un string o None, esto evita que la app explote
-            pdf_data = bytes(str(pdf_data), 'utf-8')
+        # EL FIX DE TIPOS DE DATOS: 
+        # Si es un objeto de memoria (Buffer), extraemos el contenido.
+        # Si ya son bytes, los dejamos pasar.
+        if hasattr(raw_pdf, 'getvalue'):
+            final_pdf_bytes = raw_pdf.getvalue()
+        elif isinstance(raw_pdf, bytes):
+            final_pdf_bytes = raw_pdf
+        else:
+            # Si es un objeto FPDF (común en este error), forzamos la salida a bytes
+            try:
+                final_pdf_bytes = bytes(raw_pdf)
+            except:
+                final_pdf_bytes = b"" # Evita que la app explote si viene vacío
 
         with st.container(border=True):
-            c1, c2, c3 = st.columns([0.6, 0.2, 0.2])
-            c1.subheader(f"Comprobante: {buffer['grupo']}")
+            st.subheader(f"📄 Comprobante: {buffer_data['grupo']}")
             
-            # Botón de Descarga Seguro
-            c2.download_button(
-                label="Descargar PDF",
-                data=pdf_data,
-                file_name=f"Comprobante_{buffer['grupo']}.pdf",
+            # Botón de Descarga con los BYTES CORRECTOS
+            st.download_button(
+                label="DESCARGAR PDF DE COBRO",
+                data=final_pdf_bytes,
+                file_name=f"Comprobante_{buffer_data['grupo']}.pdf",
                 mime="application/pdf",
-                key="dl_btn_final"
+                key="btn_descarga_definitiva",
+                use_container_width=True
             )
             
-            if c3.button("Cerrar Visor", key="close_v_final"):
+            if st.button("CERRAR VISOR", use_container_width=True):
                 del st.session_state.pdf_buffer
                 st.rerun()
-
-            # Mostramos el visor solo si el navegador lo permite
-            try:
-                base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf">'
-                st.markdown(pdf_display, unsafe_allow_html=True)
-            except:
-                st.info("Vista previa no disponible. Use el botón de descarga.")
 
 
     # --- RENDERIZADO DE TARJETAS ---
