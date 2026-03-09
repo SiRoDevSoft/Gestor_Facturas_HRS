@@ -18,47 +18,53 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    /* Fondo principal de la aplicación */
+    /* 1. Fondo principal y Color de Texto Global (Vital para móviles) */
     .stApp {
-        background-color: #f8f9fa;
+        background-color: #f8f9fa !important;
     }
     
-    /* Sidebar Blanco Puro y Texto Negro */
+    /* Forzar que todo el texto fuera del sidebar sea gris oscuro/negro */
+    .stApp * {
+        color: #212529;
+    }
+
+    /* 2. Sidebar Blanco Puro */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #dee2e6;
     }
     
-    /* Forzar visibilidad de todo el texto en el sidebar */
+    /* Texto del Sidebar */
     [data-testid="stSidebar"] * {
         color: #212529 !important;
     }
 
-    /* Estilo de botones de navegación (Radio Buttons) */
+    /* 3. Estilo de Radio Buttons (Menú) */
     div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label {
-        background-color: #f8f9fa;
+        background-color: #f8f9fa !important;
         padding: 12px;
         border-radius: 6px;
         margin-bottom: 6px;
         border: 1px solid #e9ecef;
-        transition: all 0.2s ease;
         width: 100%;
     }
     
-    div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label:hover {
-        border-color: #714B67;
-        background-color: #f1eff1;
+    /* Texto dentro de los botones del menú */
+    div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label div {
+        color: #212529 !important;
     }
 
-    /* Ajuste de Métricas */
+    /* 4. Métricas (Números grandes) */
     [data-testid="stMetricValue"] {
-        font-size: 2rem !important;
-        font-weight: 700 !important;
         color: #1a2c38 !important;
+    }
+    
+    /* Estilo para los dataframes (tablas) para que no se vean blancos sobre blanco */
+    [data-testid="stTable"], [data-testid="stDataFrame"] {
+        background-color: #ffffff;
     }
     </style>
 """, unsafe_allow_html=True)
-
 def main():
     logo_display_path = os.path.join("assets", "logo.png")
 
