@@ -106,7 +106,7 @@ def render_abonos():
 
     # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
     with st.container(border=False):
-        col_status, col_logo,  = st.columns([3, 1])
+        col_status  = st.columns([5, 1])
 
         
         with col_status:
