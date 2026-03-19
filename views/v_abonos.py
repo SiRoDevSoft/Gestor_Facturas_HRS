@@ -29,13 +29,9 @@ def render_abonos():
     factura_id = st.session_state.get('last_factura_id')
     mes, anio = None, None
     
-    st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
+
     
-    col_logo,  = st.columns([3, 1])
-    with col_logo:
-            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
-            if os.path.exists(logo_movistar):
-                st.image(logo_movistar, width=200)
+    
         # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
     # if not factura_id:
     #     periodos = db.get_periodos_disponibles()
@@ -82,9 +78,49 @@ def render_abonos():
     periodos_disponibles = db.get_periodos_disponibles()
 
     if not periodos_disponibles:
-        st.header("Emisión de boletos de cobro")
-        st.info("⚠️ No hay facturas procesadas. Ve a 'Auditoría' primero.")
+        st.info("No hay facturas procesadas. Ve a 'Auditoría' para cargar la primera.")
         return
+
+    # 2. Contenedor del Selector
+    with st.container(border=True):
+        col_sel, col_info = st.columns([1, 2])
+        
+        with col_sel:
+            # 'index=0' asegura que al cargar la página siempre muestre el último periodo ingresado
+            periodo_elegido = st.selectbox(
+                "Seleccionar Periodo de Emisión", 
+                periodos_disponibles, 
+                index=0,
+                help="Por defecto se muestra el último periodo cargado en la base de datos."
+            )
+        
+        with col_info:
+            # Extraemos mes y año de la selección actual
+            mes_sel, anio_sel = periodo_elegido.split('/')
+            
+            with db._get_connection() as conn:
+                # Buscamos el ID de la factura que corresponde a ese periodo
+                result = conn.execute(
+                    text("""
+                        SELECT id 
+                        FROM facturas 
+                        WHERE periodo_mes = :mes AND periodo_anio = :anio 
+                        ORDER BY id DESC 
+                        LIMIT 1
+                    """), 
+                    {"mes": mes_sel, "anio": anio_sel}
+                )
+                row = result.fetchone()
+                
+                if row:
+                    factura_id = row[0]
+                    # Actualizamos variables globales para que el resto del código funcione
+                    st.session_state.last_factura_id = factura_id
+                    mes, anio = mes_sel, anio_sel
+                    st.success(f"Visualizando periodo actualizado: {periodo_elegido}")
+                else:
+                    st.error("No se encontró registro para este periodo.")
+                    return
 
     # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
     with st.container(border=False):
