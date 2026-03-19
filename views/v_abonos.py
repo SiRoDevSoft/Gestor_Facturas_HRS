@@ -30,7 +30,12 @@ def render_abonos():
     mes, anio = None, None
     
     st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
-
+    
+    col_logo,  = st.columns([3, 1])
+    with col_logo:
+            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
+            if os.path.exists(logo_movistar):
+                st.image(logo_movistar, width=200)
         # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
     # if not factura_id:
     #     periodos = db.get_periodos_disponibles()
@@ -85,10 +90,7 @@ def render_abonos():
     with st.container(border=False):
         col_status, col_logo,  = st.columns([3, 1])
 
-        with col_logo:
-            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
-            if os.path.exists(logo_movistar):
-                st.image(logo_movistar, width=200)
+        
         with col_status:
             periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
         
