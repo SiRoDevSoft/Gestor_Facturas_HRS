@@ -30,48 +30,81 @@ def render_abonos():
     mes, anio = None, None
 
         # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
-    if not factura_id:
-        periodos = db.get_periodos_disponibles()
-        if periodos:
-            ultimo_p = periodos[0]
-            mes, anio = ultimo_p.split('/')
-            with db._get_connection() as conn:
-                # Cambiamos cursor.execute por conn.execute (Sintaxis SQLAlchemy)
-                result = conn.execute(
-                    text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
-                    {"mes": mes, "anio": anio}
-                )
-                row = result.fetchone()
-                if row:
-                    factura_id = row[0]
-                    st.session_state.last_factura_id = factura_id
-    else:
+    # if not factura_id:
+    #     periodos = db.get_periodos_disponibles()
+    #     if periodos:
+    #         ultimo_p = periodos[0]
+    #         mes, anio = ultimo_p.split('/')
+    #         with db._get_connection() as conn:
+    #             # Cambiamos cursor.execute por conn.execute (Sintaxis SQLAlchemy)
+    #             result = conn.execute(
+    #                 text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+    #                 {"mes": mes, "anio": anio}
+    #             )
+    #             row = result.fetchone()
+    #             if row:
+    #                 factura_id = row[0]
+    #                 st.session_state.last_factura_id = factura_id
+    # else:
+    #     with db._get_connection() as conn:
+    #         result = conn.execute(
+    #             text("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = :id"), 
+    #             {"id": factura_id}
+    #         )
+    #         row = result.fetchone()
+    #         if row:
+    #             mes, anio = row[0], row[1]
+
+
+    # if mes and anio:
+    #     col_tit, col_logo = st.columns([3, 1])
+    #     with col_tit:
+    #         st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
+    #     with col_logo:
+    #         logo_movistar = os.path.join("assets", "logo-Movistar.png") 
+    #         if os.path.exists(logo_movistar):
+    #          st.image(logo_movistar, width=200)
+
+    # else:
+    #     st.header("Emisión de boletos de cobro")
+
+    # if not factura_id:
+    #     st.info("Procesa una factura en 'Auditoría' primero.")
+    #     return
+    # 1. CARGA DE PERIODOS (Para que el selector tenga vida)
+    periodos_disponibles = db.get_periodos_disponibles()
+
+    if not periodos_disponibles:
+        st.info("⚠️ No hay facturas procesadas. Ve a 'Auditoría' primero.")
+        return
+
+    # 2. SELECTOR DE PERIODO (Siempre inicia en el más reciente con index=0)
+    with st.container(border=True):
+        col_sel, col_status = st.columns([1, 1])
+        with col_sel:
+            periodo_elegido = st.selectbox(
+                "📅 Periodo de Facturación", 
+                periodos_disponibles, 
+                index=0
+            )
+        
+        # Procesamos la selección para obtener el ID de factura
+        mes_sel, anio_sel = periodo_elegido.split('/')
         with db._get_connection() as conn:
             result = conn.execute(
-                text("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = :id"), 
-                {"id": factura_id}
+                text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+                {"mes": mes_sel, "anio": anio_sel}
             )
             row = result.fetchone()
             if row:
-                mes, anio = row[0], row[1]
-
-
-    if mes and anio:
-        col_tit, col_logo = st.columns([3, 1])
-        with col_tit:
-            st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
-        with col_logo:
-            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
-            if os.path.exists(logo_movistar):
-             st.image(logo_movistar, width=200)
-
-    else:
-        st.header("Emisión de boletos de cobro")
-
-    if not factura_id:
-        st.info("Procesa una factura en 'Auditoría' primero.")
-        return
-
+                factura_id = row[0]
+                st.session_state.last_factura_id = factura_id
+                mes, anio = mes_sel, anio_sel
+                with col_status:
+                    st.success(f"Datos de {periodo_elegido} listos.")
+            else:
+                st.error("No se encontró la factura.")
+                return
     # 2. CARGA Y RE-MAPEO DINÁMICO (Motor Pandas)
     df_db = db.get_consumos_por_factura(factura_id)
     if df_db.empty: return
