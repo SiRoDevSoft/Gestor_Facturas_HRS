@@ -122,7 +122,7 @@ def render_abonos():
                     # Actualizamos variables globales para que el resto del código funcione
                     st.session_state.last_factura_id = factura_id
                     mes, anio = mes_sel, anio_sel
-                    st.success(f"Visualizando periodo actualizado: {periodo_elegido}")
+                    # st.success(f"Visualizando periodo actualizado: {periodo_elegido}")
                 else:
                     st.error("No se encontró registro para este periodo.")
                     return    
