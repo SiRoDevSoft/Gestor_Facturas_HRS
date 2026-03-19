@@ -160,26 +160,38 @@ def render_abonos():
     if not externos:
         st.info("No hay grupos externos detectados.")
     else:
-        cols = st.columns(3)
+        n_cols = 3
+        cols = st.columns(n_cols)
         for i, grupo in enumerate(externos):
             df_g = df_detalle[df_detalle['grupo'] == grupo].copy().sort_values("nombre")
             total_g = df_g['precio_con_markup'].sum()
 
-            with cols[i % 3]:
+            # Validación de índice segura
+            target_col = cols[i % n_cols]
+            
+            with target_col:
                 with st.container(border=True):
                     st.subheader(grupo)
                     st.metric("Total", f"${total_g:,.2f}")
                     
                     df_view = df_g[["nombre", "linea", "costo_fijo", "costo_variable", "costo_juegos", "precio_con_markup"]].rename(
-                        columns={"nombre": "Usuario", "linea": "Línea", "costo_fijo": "Fijo", 
-                                "costo_variable": "Variable", "costo_juegos": "Juegos", "precio_con_markup": "Total c/Imp"}
+                        columns={
+                            "nombre": "Usuario", "linea": "Línea", "costo_fijo": "Fijo", 
+                            "costo_variable": "Variable", "costo_juegos": "Juegos", 
+                            "precio_con_markup": "Total c/Imp"
+                        }
                     )
+                    
                     with st.expander("Ver detalle"):
-                        st.dataframe(df_view, hide_index=True)
+                        st.dataframe(df_view, hide_index=True, use_container_width=True)
 
-                    st.button(f"Generar PDF {grupo}", key=f"btn_{grupo}", 
-                            on_click=callback_pdf, args=(grupo, df_view, total_g), use_container_width=True)
-
+                    st.button(
+                        f"Generar PDF {grupo}", 
+                        key=f"btn_{grupo}", 
+                        on_click=callback_pdf, 
+                        args=(grupo, df_view, total_g), 
+                        use_container_width=True
+                    )
     # SECCIÓN: Otros Grupos (Internos)
     for grupo_int in internos:
         df_int = df_detalle[df_detalle['grupo'] == grupo_int].copy()
