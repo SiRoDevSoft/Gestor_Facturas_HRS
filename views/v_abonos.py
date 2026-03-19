@@ -83,7 +83,7 @@ def render_abonos():
 
     # 2. Contenedor del Selector
     with st.container(border=False):
-        col_sel, col_info, col_logo = st.columns([4, 1, 1])
+        col_sel, col_info, col_logo = st.columns([2, 2, 1])
         
         with col_sel:
             st.header(f"Emisión de boletos de cobro")
