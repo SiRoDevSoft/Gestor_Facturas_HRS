@@ -137,30 +137,41 @@ from views.v_consultas import render_consultas
 from views.v_login import render_login
 from models.auth_db import AuthManager
 
-# 1. Configuración de página (Debe ser lo primero siempre)
+# 1. Configuración de página (SIEMPRE PRIMERO)
 st.set_page_config(
     page_title="Hierrosan ERP", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Inicializamos el gestor de seguridad independiente
+# Inicializamos el gestor de seguridad
 auth = AuthManager()
 
 def main():
-    # --- CONTROL DE ACCESO ---
+    # --- A: INICIALIZACIÓN DE TODAS LAS VARIABLES DE ESTADO ---
+    # Esto evita el AttributeError en v_configuracion y otras vistas
     if 'autenticado' not in st.session_state:
         st.session_state.autenticado = False
+    if 'form_version' not in st.session_state:
+        st.session_state.form_version = 0
+    if 'config_lucro' not in st.session_state:
+        st.session_state.config_lucro = 21.0
+    if 'last_factura_id' not in st.session_state:
+        st.session_state.last_factura_id = None
+    if 'menu_option' not in st.session_state:
+        st.session_state.menu_option = "📊 Auditoría"
 
-    auth.registrar_usuario("admin", "1234", "Color?", "Azul")
-        
+    # --- B: REGISTRO INICIAL (Comentar después de la primera ejecución) ---
+    # auth.registrar_usuario("admin", "1234", "Color?", "Azul")
+    
+    # --- C: CONTROL DE ACCESO ---
     if not st.session_state.autenticado:
         render_login(auth)
-        return # Si no está logueado, se detiene acá.
+        return # Frena la ejecución si no está logueado
 
-    # --- SI ESTÁ LOGUEADO, CARGAMOS EL SISTEMA ---
+    # --- D: SI ESTÁ LOGUEADO, CARGAMOS LA UI ---
     
-    # 2. ESTILOS CSS (Solo se cargan si ya entró al sistema)
+    # Estilos CSS
     st.markdown("""
         <style>
         .stApp { background-color: #f8f9fa !important; }
@@ -177,25 +188,23 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Inicialización de variables de estado del sistema
-    if 'menu_option' not in st.session_state:
-        st.session_state.menu_option = "📊 Auditoría"
-    if 'config_lucro' not in st.session_state:
-        st.session_state.config_lucro = 21.0
-
-    # --- SIDEBAR (Solo visible al estar logueado) ---
+    # --- SIDEBAR ---
     with st.sidebar:
         logo_display_path = os.path.join("assets", "logo.png")
-        # Botón de salir opcional
-        if st.sidebar.button("🚪 Cerrar Sesión"):
+        
+        if st.button("🚪 Cerrar Sesión"):
             st.session_state.autenticado = False
             st.rerun()
+            
         st.divider()
+        
         if os.path.exists(logo_display_path):
             st.image(logo_display_path, use_container_width=True)
+        else:
+            st.error("No se encontró assets/logo.png")
         
         st.markdown("<p style='text-align: center; color: #bdc3c7; font-size: 0.8rem;'>v18.0.1 Stable</p>", unsafe_allow_html=True)
-        
+        st.divider()
      
         menu = st.radio(
             "Navegación",
@@ -203,8 +212,6 @@ def main():
             index=0
         )
         st.divider()
-        
-        
 
     # --- LÓGICA DE NAVEGACIÓN ---
     if menu == "Auditoría de Factura":

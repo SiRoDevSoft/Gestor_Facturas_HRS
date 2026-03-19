@@ -165,7 +165,7 @@ def render_abonos():
             df_g = df_detalle[df_detalle['grupo'] == grupo].copy().sort_values("nombre")
             total_g = df_g['precio_con_markup'].sum()
 
-            with cols[i % 5]:
+            with cols[i % 3]:
                 with st.container(border=True):
                     st.subheader(grupo)
                     st.metric("Total", f"${total_g:,.2f}")
