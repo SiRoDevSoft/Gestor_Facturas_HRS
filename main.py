@@ -151,6 +151,8 @@ def main():
     # --- CONTROL DE ACCESO ---
     if 'autenticado' not in st.session_state:
         st.session_state.autenticado = False
+
+    auth.registrar_usuario("admin", "1234", "Color?", "Azul")
         
     if not st.session_state.autenticado:
         render_login(auth)
