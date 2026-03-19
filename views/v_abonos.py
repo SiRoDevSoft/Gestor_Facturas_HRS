@@ -30,30 +30,30 @@ def render_abonos():
     mes, anio = None, None
 
         # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
-    if not factura_id:
-        periodos = db.get_periodos_disponibles()
-        if periodos:
-            ultimo_p = periodos[0]
-            mesV, anioV = ultimo_p.split('/')
-            with db._get_connection() as conn:
-                # Cambiamos cursor.execute por conn.execute (Sintaxis SQLAlchemy)
-                result = conn.execute(
-                    text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
-                    {"mes": mesV, "anio": anioV}
-                )
-                row = result.fetchone()
-                if row:
-                    factura_id = row[0]
-                    st.session_state.last_factura_id = factura_id
-    else:
-        with db._get_connection() as conn:
-            result = conn.execute(
-                text("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = :id"), 
-                {"id": factura_id}
-            )
-            row = result.fetchone()
-            if row:
-                mesV, anioV = row[0], row[1]
+    # if not factura_id:
+    #     periodos = db.get_periodos_disponibles()
+    #     if periodos:
+    #         ultimo_p = periodos[0]
+    #         mesV, anioV = ultimo_p.split('/')
+    #         with db._get_connection() as conn:
+    #             # Cambiamos cursor.execute por conn.execute (Sintaxis SQLAlchemy)
+    #             result = conn.execute(
+    #                 text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+    #                 {"mes": mesV, "anio": anioV}
+    #             )
+    #             row = result.fetchone()
+    #             if row:
+    #                 factura_id = row[0]
+    #                 st.session_state.last_factura_id = factura_id
+    # else:
+    #     with db._get_connection() as conn:
+    #         result = conn.execute(
+    #             text("SELECT periodo_mes, periodo_anio FROM facturas WHERE id = :id"), 
+    #             {"id": factura_id}
+    #         )
+    #         row = result.fetchone()
+    #         if row:
+    #             mesV, anioV = row[0], row[1]
 
 
     # if mes and anio:
@@ -87,18 +87,10 @@ def render_abonos():
             logo_movistar = os.path.join("assets", "logo-Movistar.png") 
             if os.path.exists(logo_movistar):
                 st.image(logo_movistar, width=200)
-
-        
-
-    # 3. ENCABEZADO (Logo y Título dinámico con el mes elegido)
-    if mesV and anioV:
-        col_tit, col_sel, col_logo = st.columns([3, 1])
-        with col_tit:
-            st.header(f"Emisión de boletos de cobro: {mesV}/{anioV}")
-        with col_sel:
+        with col_status:
             periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
         
-        mes_sel, anio_sel = periodo_elegido.split('/')
+            mes_sel, anio_sel = periodo_elegido.split('/')
 
         with db._get_connection() as conn:
             result = conn.execute(
@@ -109,11 +101,22 @@ def render_abonos():
             if row:
                 factura_id = row[0]
                 st.session_state.last_factura_id = factura_id
-                # mes, anio = mes_sel, anio_sel
+                mes, anio = mes_sel, anio_sel
                 
             else:
                 st.error("No se encontró la factura.")
                 return
+        
+
+    # 3. ENCABEZADO (Logo y Título dinámico con el mes elegido)
+    if mes and anio:
+        col_tit, col_sel, col_logo = st.columns([3, 1])
+        with col_tit:
+            st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
+        with col_sel:None
+            
+
+        
         
         
     # 2. CARGA Y RE-MAPEO DINÁMICO (Motor Pandas)
