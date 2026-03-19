@@ -21,7 +21,7 @@ def render_login(auth):
     # --- 2. ESTRUCTURA DE COLUMNAS (CENTRADO) ---
     # Creamos un margen a los lados (1.2) y el contenido al centro (1.5)
     # Esto evita que el login ocupe todo el ancho de la pantalla.
-    _, col_central, _ = st.columns([1.2, 1.5, 1.2])
+    _, col_central, _ = st.columns([2, 1.5, 2])
 
     with col_central:
         # --- LOGO ---
@@ -74,7 +74,7 @@ def render_login(auth):
                     st.warning("El usuario no existe en la base de datos.")
 
     # Pie de página opcional
-    st.markdown("<p style='text-align: center; color: gray; font-size: 0.8em;'><br>Hierrosan ERP v1.0</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: gray; font-size: 0.8em;'><br>Hierrosan ERP_MOVISTAR v18.05</p>", unsafe_allow_html=True)
 
 # --- NOTA PARA EL MAIN ---
 # Asegúrate de llamar a esta función pasando tu objeto de autenticación:
