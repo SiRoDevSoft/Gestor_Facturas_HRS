@@ -11,11 +11,13 @@ def render_login(auth):
         # --- LOGO ---
         logo_path = os.path.join("assets", "logo.png")
         
-        # Contenedor para el logo (puedes ajustar el ancho aquí)
-        if os.path.exists(logo_path):
-            st.image(logo_path, use_container_width=True)
-        else:
-            st.title("🏢 Hierrosan ERP")
+        c1, c2, c3 = st.columns([1, 2, 1]) 
+        with c2: # El logo solo ocupa la parte del medio de la columna central
+            if os.path.exists(logo_path):
+                # width=150 o 200 suele ser el tamaño ideal para logins
+                st.image(logo_path, width=200) 
+            else:
+                st.subheader("🏢 Hierrosan ERP")
 
         st.divider()
 
