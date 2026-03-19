@@ -106,7 +106,7 @@ def render_abonos():
 
     # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
     with st.container(border=False):
-        col_status  = st.columns([5, 1])
+        col_status, col_x,  = st.columns([3, 1])
 
         
         with col_status:
@@ -114,21 +114,21 @@ def render_abonos():
         
             mes_sel, anio_sel = periodo_elegido.split('/')
 
-        with db._get_connection() as conn:
-            result = conn.execute(
-                text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
-                {"mes": mes_sel, "anio": anio_sel}
-            )
-            row = result.fetchone()
-            if row:
-                factura_id = row[0]
-                st.session_state.last_factura_id = factura_id
-                mes, anio = mes_sel, anio_sel
-                
-            else:
-                st.error("No se encontró la factura.")
-                return
-        
+            with db._get_connection() as conn:
+                result = conn.execute(
+                    text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+                    {"mes": mes_sel, "anio": anio_sel}
+                )
+                row = result.fetchone()
+                if row:
+                    factura_id = row[0]
+                    st.session_state.last_factura_id = factura_id
+                    mes, anio = mes_sel, anio_sel
+                    
+                else:
+                    st.error("No se encontró la factura.")
+                    return
+    
 
 
             
