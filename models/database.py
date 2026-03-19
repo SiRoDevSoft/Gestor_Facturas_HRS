@@ -96,11 +96,16 @@ class DatabaseManager:
 
     @st.cache_data(ttl=600)
     def get_periodos_disponibles(_self):
-        query = "SELECT DISTINCT (periodo_mes || '/' || periodo_anio) as periodo FROM facturas ORDER BY periodo DESC"
+        # Ordenamos primero por año (desc) y luego por mes (desc) numéricamente
+        query = """
+            SELECT DISTINCT (periodo_mes || '/' || periodo_anio) as periodo 
+            FROM facturas 
+            ORDER BY periodo_anio DESC, periodo_mes DESC
+        """
         with _self._get_connection() as conn:
             df = pd.read_sql(text(query), conn)
         return df['periodo'].tolist()
-
+    
     @st.cache_data(ttl=300)
     def get_datos_consulta(_self, periodo_str=None, grupo="TODOS"):
         query = """
