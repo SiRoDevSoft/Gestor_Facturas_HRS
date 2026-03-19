@@ -83,51 +83,78 @@ def render_abonos():
 
     # 2. Contenedor del Selector
     with st.container(border=False):
-        col_sel, col_logo = st.columns([4, 1])
+        col_sel, col_info, col_logo = st.columns([4, 1, 1])
         
         with col_sel:
             st.header(f"Emisión de boletos de cobro")
-            # # 'index=0' asegura que al cargar la página siempre muestre el último periodo ingresado
-            # periodo_elegido = st.selectbox(
-            #     "Seleccionar Periodo de Emisión", 
-            #     periodos_disponibles, 
-            #     index=0,
-            #     help="Por defecto se muestra el último periodo cargado en la base de datos."
-            # )
+            # 'index=0' asegura que al cargar la página siempre muestre el último periodo ingresado
+            periodo_elegido = st.selectbox(
+                "Seleccionar Periodo de Emisión", 
+                periodos_disponibles, 
+                index=0,
+                help="Por defecto se muestra el último periodo cargado en la base de datos."
+             )
         with col_logo:
             logo_movistar = os.path.join("assets", "logo-Movistar.png") 
             if os.path.exists(logo_movistar):
              st.image(logo_movistar, width=200)
-        
+
+        with col_info:
+            # Extraemos mes y año de la selección actual
+            mes_sel, anio_sel = periodo_elegido.split('/')
+            
+            with db._get_connection() as conn:
+                # Buscamos el ID de la factura que corresponde a ese periodo
+                result = conn.execute(
+                    text("""
+                        SELECT id 
+                        FROM facturas 
+                        WHERE periodo_mes = :mes AND periodo_anio = :anio 
+                        ORDER BY id DESC 
+                        LIMIT 1
+                    """), 
+                    {"mes": mes_sel, "anio": anio_sel}
+                )
+                row = result.fetchone()
+                
+                if row:
+                    factura_id = row[0]
+                    # Actualizamos variables globales para que el resto del código funcione
+                    st.session_state.last_factura_id = factura_id
+                    mes, anio = mes_sel, anio_sel
+                    st.success(f"Visualizando periodo actualizado: {periodo_elegido}")
+                else:
+                    st.error("No se encontró registro para este periodo.")
+                    return    
             # Extraemos mes y año de la selección actual
             # mes_sel, anio_sel = periodo_elegido.split('/')
             
             
 
-    # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
-    with st.container(border=False):
-        col_status, col_x,  = st.columns([3, 1])
+    # # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
+    # with st.container(border=False):
+    #     col_status, col_x,  = st.columns([3, 1])
 
         
-        with col_status:
-            periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
+    #     with col_status:
+    #         periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
         
-            mes_sel, anio_sel = periodo_elegido.split('/')
+    #         mes_sel, anio_sel = periodo_elegido.split('/')
 
-            with db._get_connection() as conn:
-                result = conn.execute(
-                    text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
-                    {"mes": mes_sel, "anio": anio_sel}
-                )
-                row = result.fetchone()
-                if row:
-                    factura_id = row[0]
-                    st.session_state.last_factura_id = factura_id
-                    mes, anio = mes_sel, anio_sel
+    #         with db._get_connection() as conn:
+    #             result = conn.execute(
+    #                 text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
+    #                 {"mes": mes_sel, "anio": anio_sel}
+    #             )
+    #             row = result.fetchone()
+    #             if row:
+    #                 factura_id = row[0]
+    #                 st.session_state.last_factura_id = factura_id
+    #                 mes, anio = mes_sel, anio_sel
                     
-                else:
-                    st.error("No se encontró la factura.")
-                    return
+    #             else:
+    #                 st.error("No se encontró la factura.")
+    #                 return
     
 
 
