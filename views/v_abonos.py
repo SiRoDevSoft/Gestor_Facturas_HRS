@@ -81,11 +81,13 @@ def render_abonos():
 
     # 2. SELECTOR DE PERIODO (Para definir mes/anio antes del título)
     with st.container(border=True):
-        col_sel, col_status = st.columns([1, 1])
-        with col_sel:
-            periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
-        
-        mes_sel, anio_sel = periodo_elegido.split('/')
+        col_status, col_logo,  = st.columns([3, 1])
+
+        with col_logo:
+            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
+            if os.path.exists(logo_movistar):
+                st.image(logo_movistar, width=200)
+
         with db._get_connection() as conn:
             result = conn.execute(
                 text("SELECT id FROM facturas WHERE periodo_mes = :mes AND periodo_anio = :anio ORDER BY id DESC LIMIT 1"), 
@@ -103,14 +105,14 @@ def render_abonos():
 
     # 3. ENCABEZADO (Logo y Título dinámico con el mes elegido)
     if mes and anio:
-        col_tit, col_logo = st.columns([3, 1])
+        col_tit, col_sel, col_logo = st.columns([3, 1])
         with col_tit:
             st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
-        with col_logo:
-            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
-            if os.path.exists(logo_movistar):
-                st.image(logo_movistar, width=200)
-
+        with col_sel:
+            periodo_elegido = st.selectbox("📅 Periodo de Facturación", periodos_disponibles, index=0)
+        
+        mes_sel, anio_sel = periodo_elegido.split('/')
+        
     # 2. CARGA Y RE-MAPEO DINÁMICO (Motor Pandas)
     df_db = db.get_consumos_por_factura(factura_id)
     if df_db.empty: return
