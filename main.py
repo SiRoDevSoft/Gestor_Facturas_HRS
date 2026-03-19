@@ -206,20 +206,27 @@ def main():
     with st.sidebar:
         # 1. CSS para achicar el botón específicamente en la sidebar
         st.markdown("""
-            <style>
-            [data-testid="stSidebar"] .stButton > button {
-                width: auto;
-                padding: 2px 15px;
-                font-size: 12px;
-                height: 28px;
-                color: #7f8c8d;
-                border: 1px solid #dcdde1;
-            }
-            </style>
-        """, unsafe_allow_html=True)
+                <style>
+    /* Buscamos el botón secundario dentro de la sidebar y le quitamos el borde y fondo */
+    div[data-testid="stSidebar"] button[kind="secondary"] {
+        border: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        color: #7f8c8d !important; /* Color gris suave */
+        padding: 0px !important;    /* Para que sea lo más pequeño posible */
+        height: auto !important;
+    }
+    
+    /* Efecto al pasar el mouse (opcional) */
+    div[data-testid="stSidebar"] button[kind="secondary"]:hover {
+        color: #e74c3c !important; /* Cambia a rojo al pasar el mouse */
+        text-decoration: underline;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
         # 2. Botón de Cerrar Sesión (Superior y Pequeño)
-        if st.button("🚪 Cerrar Sesión", type="secondary"):
+        if st.button("<< Cerrar Sesión", type="secondary"):
             st.session_state.autenticado = False
             st.rerun()
         
