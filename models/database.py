@@ -95,25 +95,25 @@ class DatabaseManager:
     # --- CONSULTAS CON CACHÉ (Acelera la navegación) ---
 
     @st.cache_data(ttl=600)
-def get_periodos_disponibles(_self):
+    def get_periodos_disponibles(_self):
     # Usamos una subconsulta para ordenar sin romper el DISTINCT
-    query = """
-        SELECT DISTINCT periodo_mes || '/' || periodo_anio as periodo
-        FROM facturas
-        ORDER BY periodo DESC
-    """
-    # Si lo anterior sigue dando problemas por el orden de texto (12/2025 vs 02/2026), 
-    # la forma infalible es esta:
-    query_correcta = """
-        SELECT periodo_mes || '/' || periodo_anio as periodo
-        FROM facturas
-        GROUP BY periodo_mes, periodo_anio
-        ORDER BY CAST(periodo_anio AS INTEGER) DESC, CAST(periodo_mes AS INTEGER) DESC
-    """
-    with _self._get_connection() as conn:
-        df = pd.read_sql(text(query_correcta), conn)
-    return df['periodo'].tolist()
-    
+        query = """
+            SELECT DISTINCT periodo_mes || '/' || periodo_anio as periodo
+            FROM facturas
+            ORDER BY periodo DESC
+        """
+        # Si lo anterior sigue dando problemas por el orden de texto (12/2025 vs 02/2026), 
+        # la forma infalible es esta:
+        query_correcta = """
+            SELECT periodo_mes || '/' || periodo_anio as periodo
+            FROM facturas
+            GROUP BY periodo_mes, periodo_anio
+            ORDER BY CAST(periodo_anio AS INTEGER) DESC, CAST(periodo_mes AS INTEGER) DESC
+        """
+        with _self._get_connection() as conn:
+            df = pd.read_sql(text(query_correcta), conn)
+        return df['periodo'].tolist()
+        
     @st.cache_data(ttl=300)
     def get_datos_consulta(_self, periodo_str=None, grupo="TODOS"):
         query = """
