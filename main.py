@@ -192,11 +192,9 @@ def main():
     with st.sidebar:
         logo_display_path = os.path.join("assets", "logo.png")
         
-        if st.button("🚪 Cerrar Sesión"):
+        if st.button("Cerrar Sesión"):
             st.session_state.autenticado = False
             st.rerun()
-            
-        st.divider()
         
         if os.path.exists(logo_display_path):
             st.image(logo_display_path, use_container_width=True)

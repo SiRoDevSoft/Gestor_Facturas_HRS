@@ -1,43 +1,50 @@
 import streamlit as st
-import time
+import os
 
-def render_login(auth_manager):
-    st.container()
-    with st.columns([1, 2, 1])[1]:  # Centramos el formulario
-        st.title("🔐 Acceso al Sistema")
+def render_login(auth):
+    # --- LOGO SUPERIOR ---
+    # Usamos la misma ruta que tenés en el main
+    logo_path = os.path.join("assets", "logo.png")
+    
+    # Creamos columnas para centrar el logo
+    col_logo, _ = st.columns([1, 2]) # Ajustá los pesos si lo querés más grande
+    with col_logo:
+        if os.path.exists(logo_path):
+            st.image(logo_path, use_container_width=True)
+        else:
+            st.subheader("🏢 Hierrosan ERP") # Fallback si no encuentra el logo
+
+    st.divider() # Una línea sutil para separar el logo del formulario
+
+    # --- FORMULARIO DE ACCESO ---
+    tab1, tab2 = st.tabs(["🔑 Ingresar", "🛠️ Recuperar"])
+    
+    with tab1:
+        u = st.text_input("Usuario", placeholder="Tu nombre de usuario")
+        p = st.text_input("Clave", type="password", placeholder="Tu contraseña")
         
-        tab_login, tab_recuperar = st.tabs(["Ingresar", "Olvidé mi clave"])
+        if st.button("Entrar al Sistema", use_container_width=True, type="primary"):
+            if auth.verificar_login(u, p):
+                st.session_state.autenticado = True
+                st.rerun()
+            else:
+                st.error("Credenciales incorrectas. Verificá usuario y clave.")
 
-        # --- TAB: LOGIN ---
-        with tab_login:
-            user = st.text_input("Usuario", key="login_user")
-            password = st.text_input("Contraseña", type="password", key="login_pass")
-            
-            if st.button("Entrar", use_container_width=True):
-                if auth_manager.verificar_login(user, password):
-                    st.session_state.autenticado = True
-                    st.session_state.usuario_actual = user
-                    st.success("¡Bienvenido!")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("Usuario o contraseña incorrectos")
-
-        # --- TAB: RECUPERACIÓN ---
-        with tab_recuperar:
-            user_rec = st.text_input("Ingresa tu usuario para recuperar", key="rec_user")
-            if user_rec:
-                # Aquí auth_manager debería tener un método para traer la pregunta
-                pregunta = auth_manager.obtener_pregunta(user_rec)
-                if pregunta:
-                    st.info(f"Pregunta de seguridad: {pregunta}")
-                    respuesta = st.text_input("Tu respuesta", key="rec_ans")
-                    nueva_pass = st.text_input("Nueva contraseña", type="password", key="new_pass")
-                    
-                    if st.button("Restablecer", use_container_width=True):
-                        if auth_manager.verificar_y_resetear(user_rec, respuesta, nueva_pass):
-                            st.success("Contraseña actualizada. Ya puedes loguearte.")
-                        else:
-                            st.error("Respuesta incorrecta.")
-                else:
-                    st.warning("El usuario no existe.")
+    with tab2:
+        st.info("Ingresá tu usuario para ver la pregunta de seguridad.")
+        u_r = st.text_input("Usuario", key="user_recuperar")
+        
+        if u_r:
+            preg = auth.obtener_pregunta(u_r)
+            if preg:
+                st.markdown(f"**Pregunta:** *{preg}*")
+                res = st.text_input("Tu respuesta", key="resp_recuperar")
+                new_p = st.text_input("Nueva Clave", type="password", key="new_pass")
+                
+                if st.button("Resetear Contraseña", use_container_width=True):
+                    if auth.verificar_y_resetear(u_r, res, new_p):
+                        st.success("¡Clave actualizada! Ya podés ir a la pestaña 'Ingresar'.")
+                    else:
+                        st.error("La respuesta es incorrecta.")
+            else:
+                st.error("El usuario no existe.")
