@@ -186,11 +186,16 @@ def main():
     # --- SIDEBAR (Solo visible al estar logueado) ---
     with st.sidebar:
         logo_display_path = os.path.join("assets", "logo.png")
+        # Botón de salir opcional
+        if st.sidebar.button("🚪 Cerrar Sesión"):
+            st.session_state.autenticado = False
+            st.rerun()
+        st.divider()
         if os.path.exists(logo_display_path):
             st.image(logo_display_path, use_container_width=True)
         
         st.markdown("<p style='text-align: center; color: #bdc3c7; font-size: 0.8rem;'>v18.0.1 Stable</p>", unsafe_allow_html=True)
-        st.divider()
+        
      
         menu = st.radio(
             "Navegación",
@@ -199,10 +204,7 @@ def main():
         )
         st.divider()
         
-        # Botón de salir opcional
-        if st.sidebar.button("🚪 Cerrar Sesión"):
-            st.session_state.autenticado = False
-            st.rerun()
+        
 
     # --- LÓGICA DE NAVEGACIÓN ---
     if menu == "Auditoría de Factura":
