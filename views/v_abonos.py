@@ -96,20 +96,20 @@ def render_abonos():
                 factura_id = row[0]
                 st.session_state.last_factura_id = factura_id
                 mes, anio = mes_sel, anio_sel
-                with col_status:
-                    st.success(f"Datos de {periodo_elegido} listos.")
+                
             else:
                 st.error("No se encontró la factura.")
                 return
 
     # 3. ENCABEZADO (Logo y Título dinámico con el mes elegido)
-    col_tit, col_logo = st.columns([3, 1])
-    with col_tit:
-        st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
-    with col_logo:
-        logo_movistar = os.path.join("assets", "logo-Movistar.png") 
-        if os.path.exists(logo_movistar):
-            st.image(logo_movistar, width=200)
+    if mes and anio:
+        col_tit, col_logo = st.columns([3, 1])
+        with col_tit:
+            st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
+        with col_logo:
+            logo_movistar = os.path.join("assets", "logo-Movistar.png") 
+            if os.path.exists(logo_movistar):
+                st.image(logo_movistar, width=200)
 
     # 2. CARGA Y RE-MAPEO DINÁMICO (Motor Pandas)
     df_db = db.get_consumos_por_factura(factura_id)
