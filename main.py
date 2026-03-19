@@ -189,19 +189,52 @@ def main():
     """, unsafe_allow_html=True)
 
     # --- SIDEBAR ---
-    with st.sidebar:
-        logo_display_path = os.path.join("assets", "logo.png")
+    # with st.sidebar:
+    #     logo_display_path = os.path.join("assets", "logo.png")
         
-        if st.button("Cerrar Sesión"):
+    #     if st.button("Cerrar Sesión"):
+    #         st.session_state.autenticado = False
+    #         st.rerun()
+        
+    #     if os.path.exists(logo_display_path):
+    #         st.image(logo_display_path, use_container_width=True)
+    #     else:
+    #         st.error("No se encontró assets/logo.png")
+        
+    #     st.markdown("<p style='text-align: center; color: #bdc3c7; font-size: 0.8rem;'>v18.0.1 Stable</p>", unsafe_allow_html=True)
+    #     st.divider()
+    with st.sidebar:
+        # 1. CSS para achicar el botón específicamente en la sidebar
+        st.markdown("""
+            <style>
+            [data-testid="stSidebar"] .stButton > button {
+                width: auto;
+                padding: 2px 15px;
+                font-size: 12px;
+                height: 28px;
+                color: #7f8c8d;
+                border: 1px solid #dcdde1;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+        # 2. Botón de Cerrar Sesión (Superior y Pequeño)
+        if st.button("🚪 Cerrar Sesión", type="secondary"):
             st.session_state.autenticado = False
             st.rerun()
         
+        st.markdown("<br>", unsafe_allow_html=True) # Espacio sutil
+
+        # 3. Logo
+        logo_display_path = os.path.join("assets", "logo.png")
         if os.path.exists(logo_display_path):
+            # Usamos un ancho controlado para que no sature la sidebar
             st.image(logo_display_path, use_container_width=True)
         else:
             st.error("No se encontró assets/logo.png")
         
-        st.markdown("<p style='text-align: center; color: #bdc3c7; font-size: 0.8rem;'>v18.0.1 Stable</p>", unsafe_allow_html=True)
+        # 4. Versión y Separador
+        st.markdown("<p style='text-align: center; color: #bdc3c7; font-size: 0.75rem; margin-top: -10px;'>v18.0.1 Stable</p>", unsafe_allow_html=True)
         st.divider()
      
         menu = st.radio(

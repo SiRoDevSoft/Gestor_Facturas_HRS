@@ -21,7 +21,7 @@ def render_login(auth):
     # --- 2. ESTRUCTURA DE COLUMNAS (CENTRADO) ---
     # Creamos un margen a los lados (1.2) y el contenido al centro (1.5)
     # Esto evita que el login ocupe todo el ancho de la pantalla.
-    _, col_central, _ = st.columns([2, 1.5, 2])
+    _, col_central, _ = st.columns([2, 3, 2])
 
     with col_central:
         # --- LOGO ---
