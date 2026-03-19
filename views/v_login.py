@@ -27,8 +27,8 @@ def render_login(auth):
         # --- LOGO ---
         logo_path = os.path.join("assets", "logo.png")
         if os.path.exists(logo_path):
-            # Usamos un ancho fijo (250) para que no sea gigante
-            st.image(logo_path, width=250)
+            # Usamos un ancho fijo (300) para que no sea gigante
+            st.image(logo_path, width=300)
         else:
             st.markdown("<h2 style='text-align: center;'>HIERROSAN</h2>", unsafe_allow_html=True)
 
