@@ -28,6 +28,8 @@ def render_abonos():
 
     factura_id = st.session_state.get('last_factura_id')
     mes, anio = None, None
+    
+    st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
 
         # --- REEMPLAZO DE LÓGICA DE RECUPERACIÓN (Líneas 31-48 aprox) ---
     # if not factura_id:
@@ -109,11 +111,11 @@ def render_abonos():
         
 
     # 3. ENCABEZADO (Logo y Título dinámico con el mes elegido)
-    if mes and anio:
-        col_tit, col_sel, col_logo = st.columns([3, 1])
-        with col_tit:
-            st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
-        with col_sel:None
+    # if mes and anio:
+    #     col_tit, col_sel, col_logo = st.columns([3, 1])
+    #     with col_tit:
+    #         st.header(f"Emisión de boletos de cobro: {mes}/{anio}")
+    #     with col_sel:None
             
 
         
