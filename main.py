@@ -5,6 +5,7 @@ from views.v_auditoria import render_auditoria
 from views.v_abonos import render_abonos
 from views.v_configuracion import render_configuracion
 from views.v_consultas import render_consultas 
+from utils.helpers import configure_ui_assets
 from views.v_login import render_login
 from views.v_dashboard import render_dashboard
 from models.auth_db import AuthManager
@@ -50,10 +51,12 @@ def main():
     auth.registrar_usuario("admin", "1234", "Color?", "Azul")
     
     if not st.session_state.autenticado:
+        configure_ui_assets(is_authenticated=False)
         render_login(auth)
         return 
 
     # --- SIDEBAR NAVEGACIÓN ---
+    configure_ui_assets(is_authenticated=True)
     with st.sidebar:
         if st.button("<< Cerrar Sesión", type="secondary"):
             st.session_state.autenticado = False

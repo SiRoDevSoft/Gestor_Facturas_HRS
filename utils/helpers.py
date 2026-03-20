@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import os
 import streamlit as st
 
 
@@ -34,6 +34,21 @@ def clean_currency(value):
 
 
 
-
+def configure_ui_assets(is_authenticated=False):
+    """Carga CSS y, si el usuario está logueado, inyecta el botón de menú."""
+    # 1. Cargar el CSS base (siempre, para que el login se vea bien)
+    css_path = os.path.join("assets", "css", "styles.css")
+    if os.path.exists(css_path):
+        with open(css_path) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+    # 2. Inyectar el botón de Menú SOLO si ya pasó el login
+    if is_authenticated:
+        st.markdown("""
+            <button id="custom-sidebar-btn" 
+                    onclick="window.parent.document.querySelector('[data-testid=\\'stSidebarCollapseButton\\']').click()">
+                ☰ Menú
+            </button>
+        """, unsafe_allow_html=True)
 
 
