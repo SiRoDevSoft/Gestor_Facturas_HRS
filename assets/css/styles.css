@@ -1,0 +1,70 @@
+/* --- CONFIGURACIÓN GENERAL --- */
+.stApp { background-color: #f8f9fa !important; }
+.stApp * { color: #212529; }
+
+/* --- OCULTAR ELEMENTOS NATIVOS --- */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { background-color: rgba(0,0,0,0) !important; }
+
+/* Ocultar botón original de sidebar */
+[data-testid="stSidebarCollapseButton"] {
+    display: none !important;
+}
+
+/* --- ELEMENTOS DE MARCA (SIRODEVSOFT) --- */
+.stButton>button {
+    background-color: #0092c1;
+    color: white;
+    border-radius: 5px;
+}
+
+/* Botón flotante personalizado para el Menú */
+#custom-sidebar-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 999999;
+    background-color: #0092c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+#custom-sidebar-btn:hover { background-color: #007ba3; transform: scale(1.05); }
+
+/* --- SIDEBAR CUSTOM --- */
+[data-testid="stSidebar"] { 
+    background-color: #ffffff !important; 
+    border-right: 1px solid #dee2e6; 
+}
+
+/* Botón "Cerrar Sesión" ultra pequeño en sidebar */
+div[data-testid="stSidebar"] button[kind="secondary"] {
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #7f8c8d !important;
+    padding: 0px !important;
+    height: auto !important;
+}
+
+div[data-testid="stSidebar"] button[kind="secondary"]:hover {
+    color: #e74c3c !important;
+    text-decoration: underline;
+}
+
+/* Estilo de los items del menú radio */
+div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label {
+    background-color: #f8f9fa !important;
+    padding: 12px; border-radius: 6px; margin-bottom: 6px;
+    border: 1px solid #e9ecef; width: 100%;
+}
+
+/* Metricas y Tablas */
+[data-testid="stMetricValue"] { color: #1a2c38 !important; }
+[data-testid="stTable"], [data-testid="stDataFrame"] { background-color: #ffffff; }
