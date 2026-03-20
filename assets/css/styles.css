@@ -1,77 +1,57 @@
-/* --- CONFIGURACIÓN GENERAL --- */
-.stApp { background-color: #f8f9fa !important; }
-.stApp * { color: #212529; }
+/* --- RESET DE ESTABILIDAD SIRODEVSOFT --- */
 
-/* --- LIMPIEZA TOTAL DEL HEADER (Técnica Invisible) --- */
+/* Fondo y tipografía base */
+.stApp { 
+    background-color: #f8f9fa !important; 
+}
 
-/* 1. Ocultar Menú y Footer */
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-
-
+/* 1. Header Visible y Funcional (Sin vueltas) */
 header[data-testid="stHeader"] {
-    background-color: rgba(0,0,0,0) !important;
-    pointer-events: none;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #dee2e6;
+    visibility: visible !important;
 }
 
-header[data-testid="stHeader"] svg, 
-header[data-testid="stHeader"] img,
-header[data-testid="stHeader"] div:not([data-testid="stSidebarCollapseButton"]) {
-    opacity: 0 !important;
-    pointer-events: none;
-}
+/* 2. Ocultar solo lo que molesta (Menú 3 puntos y Footer) */
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
 
-/* 3. El Botón de Sidebar se vuelve invisible pero funcional */
+/* 3. Asegurar que el botón de desplegar sidebar sea visible y clickeable */
 [data-testid="stSidebarCollapseButton"] {
-    display: inline-flex !important;
-    opacity: 0.1 !important;   
-    pointer-events: auto !important; 
-    z-index: 99999999 !important;       
-    transition: opacity 0.3s ease;
-    color: #0092c1 !important;
-}
-
-/* 4. Solo se ve cuando el mouse pasa por la esquina superior izquierda */
-[data-testid="stSidebarCollapseButton"]:hover {
+    color: #333 !important;
+    visibility: visible !important;
     opacity: 1 !important;
-    background-color: #f0f2f6 !important;
 }
 
-/* --- ELEMENTOS DE MARCA (SIRODEVSOFT) --- */
+/* --- ESTÉTICA CORPORATIVA HIERROSAN --- */
+
+/* Botones con el celeste de la empresa */
 .stButton>button {
     background-color: #0092c1;
     color: white;
     border-radius: 5px;
+    font-weight: 600;
 }
 
-/* --- SIDEBAR CUSTOM --- */
+/* Sidebar Blanco con borde */
 [data-testid="stSidebar"] { 
     background-color: #ffffff !important; 
     border-right: 1px solid #dee2e6; 
 }
 
-/* Botón "Cerrar Sesión" ultra pequeño en sidebar */
-div[data-testid="stSidebar"] button[kind="secondary"] {
-    border: none !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    color: #7f8c8d !important;
-    padding: 0px !important;
-    height: auto !important;
-}
-
-div[data-testid="stSidebar"] button[kind="secondary"]:hover {
-    color: #e74c3c !important;
-    text-decoration: underline;
-}
-
-/* Estilo de los items del menú radio */
+/* Navegación (Radio Buttons) con estilo de tarjetas */
 div[data-testid="stSidebarUserContent"] div[role="radiogroup"] label {
     background-color: #f8f9fa !important;
-    padding: 12px; border-radius: 6px; margin-bottom: 6px;
-    border: 1px solid #e9ecef; width: 100%;
+    padding: 10px 15px; 
+    border-radius: 8px; 
+    margin-bottom: 8px;
+    border: 1px solid #e9ecef; 
+    width: 100%;
+    cursor: pointer;
 }
 
-/* Metricas y Tablas */
-[data-testid="stMetricValue"] { color: #1a2c38 !important; }
-[data-testid="stTable"], [data-testid="stDataFrame"] { background-color: #ffffff; }
+/* Métricas para Auditoría */
+[data-testid="stMetricValue"] { 
+    color: #0092c1 !important; 
+    font-weight: bold;
+}
