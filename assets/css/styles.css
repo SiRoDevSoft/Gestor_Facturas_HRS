@@ -11,7 +11,10 @@ header[data-testid="stHeader"] {
     border-bottom: 1px solid #dee2e6;
     visibility: visible !important;
 }
-
+/* Usamos la clase que encontraste para ocultar los botones de la derecha (Share, Deploy, etc) */
+.st-emotion-cache-scp8yw {
+    display: none !important;
+}
 /* 2. Ocultar solo lo que molesta (Menú 3 puntos y Footer) */
 #MainMenu { visibility: hidden !important; }
 footer { visibility: hidden !important; }
