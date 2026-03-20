@@ -35,7 +35,7 @@ def render_login(auth):
         st.divider()
 
         # --- FORMULARIO CON TABS ---
-        tab1, tab2 = st.tabs(["🔑 Ingresar", "🛠️ Recuperar"])
+        tab1, tab2 = st.tabs(["Ingresar", "Recuperar"])
         
         with tab1:
             # Campos de entrada
@@ -45,7 +45,7 @@ def render_login(auth):
             st.markdown("<br>", unsafe_allow_html=True) # Espaciado simple
             
             # Botón de acceso resaltado
-            if st.button("Entrar al Sistema", use_container_width=True, type="primary"):
+            if st.button("Entrar al Sistema", use_container_width=True, type="secondary"):
                 if auth.verificar_login(u, p):
                     st.session_state.autenticado = True
                     st.success("Acceso concedido")
