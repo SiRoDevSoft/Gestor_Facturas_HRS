@@ -8,9 +8,10 @@
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 
-/* 2. Header transparente y limpieza de logos (Gemini/Streamlit) */
+
 header[data-testid="stHeader"] {
     background-color: rgba(0,0,0,0) !important;
+    pointer-events: none;
 }
 
 header[data-testid="stHeader"] svg, 
@@ -22,8 +23,10 @@ header[data-testid="stHeader"] div:not([data-testid="stSidebarCollapseButton"]) 
 
 /* 3. El Botón de Sidebar se vuelve invisible pero funcional */
 [data-testid="stSidebarCollapseButton"] {
-    display: inline-flex !important; /* Lo volvemos a habilitar */
-    opacity: 0 !important;           /* Totalmente invisible */
+    display: inline-flex !important;
+    opacity: 0.1 !important;   
+    pointer-events: auto !important; 
+    z-index: 99999999 !important;       
     transition: opacity 0.3s ease;
     color: #0092c1 !important;
 }
