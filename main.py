@@ -162,7 +162,7 @@ def main():
         st.session_state.menu_option = "📊 Auditoría"
 
     # --- B: REGISTRO INICIAL (Comentar después de la primera ejecución) ---
-    # auth.registrar_usuario("admin", "1234", "Color?", "Azul")
+    auth.registrar_usuario("admin", "1234", "Color?", "Azul")
     
     # --- C: CONTROL DE ACCESO ---
     if not st.session_state.autenticado:
