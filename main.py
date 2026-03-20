@@ -7,14 +7,26 @@ from views.v_consultas import render_consultas
 from views.v_login import render_login
 from views.v_dashboard import render_dashboard
 from models.auth_db import AuthManager
+from PIL import Image
 
+favicon_path = os.path.join("assets", "favicon.png")
 # 1. Configuración de página 
-st.set_page_config(
-    page_title="ERP Hierrosan | SiRoDevSoft",
-    page_icon="🏗️", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+try:
+    img_icon = Image.open(favicon_path)
+    st.set_page_config(
+        page_title="ERP Hierrosan | SiRoDevSoft",
+        page_icon=img_icon, 
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+except Exception:
+    # Backup por si el archivo no se encuentra o está corrupto
+    st.set_page_config(
+        page_title="ERP Hierrosan | SiRoDevSoft",
+        page_icon="🏗️", 
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 # Inyectar CSS para ocultar el menú de Streamlit y el pie de página
 hide_st_style = """
             <style>
