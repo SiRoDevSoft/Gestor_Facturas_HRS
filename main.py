@@ -10,10 +10,26 @@ from models.auth_db import AuthManager
 
 # 1. Configuración de página 
 st.set_page_config(
-    page_title="Hierrosan ERP", 
+    page_title="ERP Hierrosan | SiRoDevSoft",
+    page_icon="🏗️", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
+# Inyectar CSS para ocultar el menú de Streamlit y el pie de página
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            /* Cambiar el color de los botones al celeste de la empresa */
+            .stButton>button {
+                background-color: #0092c1;
+                color: white;
+                border-radius: 5px;
+            }
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Inicializamos el gestor de seguridad
 auth = AuthManager()
