@@ -2,14 +2,36 @@
 .stApp { background-color: #f8f9fa !important; }
 .stApp * { color: #212529; }
 
-/* --- OCULTAR ELEMENTOS NATIVOS --- */
+/* --- LIMPIEZA TOTAL DEL HEADER (Técnica Invisible) --- */
+
+/* 1. Ocultar Menú y Footer */
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
-header { background-color: rgba(0,0,0,0) !important; }
 
-/* Ocultar botón original de sidebar */
+/* 2. Header transparente y limpieza de logos (Gemini/Streamlit) */
+header[data-testid="stHeader"] {
+    background-color: rgba(0,0,0,0) !important;
+}
+
+header[data-testid="stHeader"] svg, 
+header[data-testid="stHeader"] img,
+header[data-testid="stHeader"] div:not([data-testid="stSidebarCollapseButton"]) {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+/* 3. El Botón de Sidebar se vuelve invisible pero funcional */
 [data-testid="stSidebarCollapseButton"] {
-    display: none !important;
+    display: inline-flex !important; /* Lo volvemos a habilitar */
+    opacity: 0 !important;           /* Totalmente invisible */
+    transition: opacity 0.3s ease;
+    color: #0092c1 !important;
+}
+
+/* 4. Solo se ve cuando el mouse pasa por la esquina superior izquierda */
+[data-testid="stSidebarCollapseButton"]:hover {
+    opacity: 1 !important;
+    background-color: #f0f2f6 !important;
 }
 
 /* --- ELEMENTOS DE MARCA (SIRODEVSOFT) --- */
@@ -18,24 +40,6 @@ header { background-color: rgba(0,0,0,0) !important; }
     color: white;
     border-radius: 5px;
 }
-
-/* Botón flotante personalizado para el Menú */
-#custom-sidebar-btn {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 999999;
-    background-color: #0092c1;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    transition: 0.3s;
-}
-#custom-sidebar-btn:hover { background-color: #007ba3; transform: scale(1.05); }
 
 /* --- SIDEBAR CUSTOM --- */
 [data-testid="stSidebar"] { 

@@ -18,18 +18,15 @@ def load_assets():
         with open(css_file) as f:
             st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
     
-    # Inyectamos el botón de menú y el trigger JS
-    st.markdown("""
-        <button id="custom-sidebar-btn" onclick="window.parent.document.querySelector('[data-testid=\\'stSidebarCollapseButton\\']').click()">
-            ☰ Menú
-        </button>
-        """, unsafe_allow_html=True)
-
+  
 # --- 1. CONFIGURACIÓN DE PÁGINA ---
 favicon_path = os.path.join("assets", "ICONO.png")
 try:
     img_icon = Image.open(favicon_path)
-    st.set_page_config(page_title="ERP Hierrosan | SiRoDevSoft", page_icon=img_icon, layout="wide")
+    st.set_page_config(page_title="ERP Hierrosan | SiRoDevSoft", 
+                       page_icon=img_icon,
+                        layout="wide",
+                        initial_sidebar_state="expanded")
 except:
     st.set_page_config(page_title="ERP Hierrosan | SiRoDevSoft", page_icon="🏗️", layout="wide")
 
@@ -51,12 +48,12 @@ def main():
     auth.registrar_usuario("admin", "1234", "Color?", "Azul")
     
     if not st.session_state.autenticado:
-        configure_ui_assets(is_authenticated=False)
+        # configure_ui_assets(is_authenticated=False)
         render_login(auth)
         return 
 
     # --- SIDEBAR NAVEGACIÓN ---
-    configure_ui_assets(is_authenticated=True)
+    # configure_ui_assets(is_authenticated=True)
     with st.sidebar:
         if st.button("<< Cerrar Sesión", type="secondary"):
             st.session_state.autenticado = False
