@@ -9,7 +9,7 @@ from views.v_dashboard import render_dashboard
 from models.auth_db import AuthManager
 from PIL import Image
 
-favicon_path = os.path.join("assets", "favicon.png")
+favicon_path = os.path.join("assets", "ICONO.png")
 # 1. Configuración de página 
 try:
     img_icon = Image.open(favicon_path)
