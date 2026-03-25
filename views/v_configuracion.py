@@ -145,23 +145,23 @@ def render_configuracion():
     
     st.subheader("Administración de Accesos")
     
-    tab_u1, tab_u2 = st.tabs(["➕ Registrar Nuevo", "🔐 Gestionar Existentes"])
-    # --- PRUEBA DE CONTROL ---
-    st.error("### 🔍 MÓDULO DE CONTROL DE ACCESOS V2")
+    tab_u1, tab_u2 = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
+    # # --- PRUEBA DE CONTROL ---
+    # st.error("### 🔍 MÓDULO DE CONTROL DE ACCESOS V2")
     
-    auth_admin = AuthManager()
-    lista = auth_admin.listar_usuarios()
+    # auth_admin = AuthManager()
+    # lista = auth_admin.listar_usuarios()
     
-    st.write(f"Usuarios detectados en DB: **{lista}**")
+    # st.write(f"Usuarios detectados en DB: **{lista}**")
     
-    if lista:
-        for u in lista:
-            col_a, col_b = st.columns([4, 1])
-            col_a.write(f"👤 {u}")
-            if col_b.button("Borrar", key=f"btn_test_{u}"):
-                auth_admin.eliminar_usuario(u)
-                st.rerun()
-    st.divider()
+    # if lista:
+    #     for u in lista:
+    #         col_a, col_b = st.columns([4, 1])
+    #         col_a.write(f"👤 {u}")
+    #         if col_b.button("Borrar", key=f"btn_test_{u}"):
+    #             auth_admin.eliminar_usuario(u)
+    #             st.rerun()
+    # st.divider()
 
     with tab_u1:
         with st.expander("Formulario de Registro", expanded=True):
@@ -173,7 +173,7 @@ def render_configuracion():
                 preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
                 resp_u = st.text_input("Respuesta", key="new_user_resp")
             
-            if st.button("Crear Cuenta", use_container_width=True, type="primary"):
+            if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
                 if all([nuevo_u, nuevo_p, preg_u, resp_u]):
                     auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
                     st.success(f"Usuario {nuevo_u} creado correctamente.")
