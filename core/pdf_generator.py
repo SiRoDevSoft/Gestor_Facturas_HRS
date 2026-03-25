@@ -140,12 +140,14 @@ def generar_pdf_bytes(grupo, df, total):
     pdf.cell(0, 7, f"Fecha de Emisión: {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M')}", 0, 1)
     pdf.ln(5)
 
+    col_total_name = "Total" if "Total" in df.columns else "Total c/Imp"
+    
     # Lógica de Columnas Dinámicas (Senior Check)
     if "Usuario" in df.columns:
-        headers = ["Usuario", "Línea", "Fijo", "Var.", "Juegos", "Total c/Imp"]
+        headers = ["Usuario", "Línea", "Fijo", "Var.", "Juegos", col_total_name]
         col_widths = [55, 30, 25, 20, 25, 35]
     else:
-        headers = ["Línea", "Fijo", "Variable", "Juegos", "Total c/Imp"]
+        headers = ["Línea", "Fijo", "Variable", "Juegos", col_total_name]
         col_widths = [45, 35, 35, 30, 45]
 
     # Encabezados de Tabla
@@ -166,13 +168,13 @@ def generar_pdf_bytes(grupo, df, total):
             pdf.cell(col_widths[2], 8, f"$ {row['Fijo']:,.2f}", 1, 0, 'R')
             pdf.cell(col_widths[3], 8, f"$ {row['Variable']:,.2f}", 1, 0, 'R')
             pdf.cell(col_widths[4], 8, f"$ {row['Juegos']:,.2f}", 1, 0, 'R')
-            pdf.cell(col_widths[5], 8, f"$ {row['Total c/Imp']:,.2f}", 1, 0, 'R')
+            pdf.cell(col_widths[5], 8, f"$ {row[col_total_name]:,.2f}", 1, 0, 'R')
         else:
             pdf.cell(col_widths[0], 8, str(row['Línea']), 1, 0, 'C')
             pdf.cell(col_widths[1], 8, f"$ {row['Fijo']:,.2f}", 1, 0, 'R')
             pdf.cell(col_widths[2], 8, f"$ {row['Variable']:,.2f}", 1, 0, 'R')
             pdf.cell(col_widths[3], 8, f"$ {row['Juegos']:,.2f}", 1, 0, 'R')
-            pdf.cell(col_widths[4], 8, f"$ {row['Total c/Imp']:,.2f}", 1, 0, 'R')
+            pdf.cell(col_widths[4], 8, f"$ {row[col_total_name]:,.2f}", 1, 0, 'R')
         pdf.ln()
 
     # Totalizador Final
