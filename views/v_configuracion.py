@@ -123,23 +123,73 @@ def render_configuracion():
 
     st.divider()
 
-    # --- SECCIÓN C: GESTIÓN DE USUARIOS (ACCESO AL SISTEMA) ---
-    st.subheader("👤 Administración de Accesos")
-    with st.expander("Registrar Nuevo Usuario", expanded=False):
-        col_u1, col_u2 = st.columns(2)
-        with col_u1:
-            nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
-            nuevo_p = st.text_input("Contraseña", type="password", key="new_user_pass")
-        with col_u2:
-            preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
-            resp_u = st.text_input("Respuesta", key="new_user_resp")
+    # # --- SECCIÓN C: GESTIÓN DE USUARIOS (ACCESO AL SISTEMA) ---
+    # st.subheader("👤 Administración de Accesos")
+    # with st.expander("Registrar Nuevo Usuario", expanded=False):
+    #     col_u1, col_u2 = st.columns(2)
+    #     with col_u1:
+    #         nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
+    #         nuevo_p = st.text_input("Contraseña", type="password", key="new_user_pass")
+    #     with col_u2:
+    #         preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
+    #         resp_u = st.text_input("Respuesta", key="new_user_resp")
         
-        if st.button("Crear Cuenta", use_container_width=True):
-            if all([nuevo_u, nuevo_p, preg_u, resp_u]):
-                auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
-                st.success(f"Usuario {nuevo_u} creado correctamente.")
-            else:
-                st.warning("Completar todos los campos para el registro.")
+    #     if st.button("Crear Cuenta", use_container_width=True):
+    #         if all([nuevo_u, nuevo_p, preg_u, resp_u]):
+    #             auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
+    #             st.success(f"Usuario {nuevo_u} creado correctamente.")
+    #         else:
+    #             st.warning("Completar todos los campos para el registro.")
+
+    # --- SECCIÓN C: GESTIÓN DE USUARIOS (ACCESO AL SISTEMA) ---
+    
+    st.subheader("Administración de Accesos")
+    
+    tab_u1, tab_u2 = st.tabs(["➕ Registrar Nuevo", "🔐 Gestionar Existentes"])
+
+    with tab_u1:
+        with st.expander("Formulario de Registro", expanded=True):
+            col_u1, col_u2 = st.columns(2)
+            with col_u1:
+                nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
+                nuevo_p = st.text_input("Contraseña", type="password", key="new_user_pass")
+            with col_u2:
+                preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
+                resp_u = st.text_input("Respuesta", key="new_user_resp")
+            
+            if st.button("Crear Cuenta", use_container_width=True, type="primary"):
+                if all([nuevo_u, nuevo_p, preg_u, resp_u]):
+                    auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
+                    st.success(f"Usuario {nuevo_u} creado correctamente.")
+                    sleep(1)
+                    st.rerun()
+                else:
+                    st.warning("Completar todos los campos para el registro.")
+
+    with tab_u2:
+        lista_users = auth.listar_usuarios()
+        if lista_users:
+            st.write(f"Total de usuarios: **{len(lista_users)}**")
+            
+            for user in lista_users:
+                # Usamos un container para agrupar visualmente cada fila
+                with st.container(border=True):
+                    c1, c2 = st.columns([4, 1])
+                    with c1:
+                        st.markdown(f"**Usuario:** `{user}`")
+                    with c2:
+                        # Evitamos que se elimine a sí mismo si tenemos el dato en session_state
+                        es_mismo_usuario = st.session_state.get('usuario') == user
+                        
+                        if st.button("🗑️", key=f"btn_del_{user}", help=f"Eliminar a {user}", disabled=es_mismo_usuario):
+                            auth.eliminar_usuario(user)
+                            st.toast(f"Usuario {user} eliminado.")
+                            sleep(1)
+                            st.rerun()
+        else:
+            st.info("No hay usuarios registrados en el sistema.")
+
+
 
     # --- SIDEBAR: GRUPOS Y CATEGORÍAS ---
     with st.sidebar:

@@ -46,3 +46,16 @@ class AuthManager:
                 conn.commit()
                 return True
         return False
+    
+    def listar_usuarios(self):
+        """Retorna una lista de todos los nombres de usuario registrados."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute("SELECT username FROM usuarios")
+            return [row[0] for row in cursor.fetchall()]
+
+    def eliminar_usuario(self, username):
+        """Elimina un usuario de la base de datos."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("DELETE FROM usuarios WHERE username = ?", (username,))
+            conn.commit()
+            return True
