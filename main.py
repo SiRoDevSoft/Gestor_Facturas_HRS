@@ -45,7 +45,7 @@ def main():
         if key not in st.session_state: st.session_state[key] = val
 
     # # Registro inicial de admin (Solo para desarrollo)
-    auth.registrar_usuario("admin", "1234", "Color?", "Azul")
+    auth.registrar_usuario("admin", "Stock5600", "Color?", "Azul")
     
     if not st.session_state.autenticado:
         # configure_ui_assets(is_authenticated=False)
