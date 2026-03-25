@@ -101,7 +101,17 @@ def render_abonos():
     df_detalle['grupo'] = df_detalle['grupo_nuevo'].fillna('SIN ASIGNAR')
 
     
+    # =========================================================================
+    # LOGICA DE EXCEPCIÓN: GRUPO PIEDECASAS (No paga impuesto/markup)
+    # =========================================================================
+    # Si el grupo es PIEDECASAS, forzamos que el 'precio_con_markup' sea solo la suma de costos base
+    condicion_exenta = df_detalle['grupo'] == 'PIEDECASAS'
     
+    df_detalle.loc[condicion_exenta, 'precio_con_markup'] = (
+        df_detalle['costo_fijo'] + 
+        df_detalle['costo_variable'] + 
+        df_detalle['costo_juegos']
+    )
     
         # --- DESCARGA DE PDF (Única y Directa) ---
     if "pdf_buffer" in st.session_state:
