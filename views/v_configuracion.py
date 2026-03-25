@@ -147,8 +147,9 @@ def render_configuracion():
     if "expander_abierto" not in st.session_state:
         st.session_state.expander_abierto = False
 
-    tab_alta, tab_lista = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
-    with st.expander("Formulario de Registro", expanded=True):
+    tab_u1, tab_u2 = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
+    with tab_u1:
+        with st.expander("Formulario de Registro", expanded=True):
             col_u1, col_u2 = st.columns(2)
             with col_u1:
                 nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
@@ -157,7 +158,7 @@ def render_configuracion():
                 preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
                 resp_u = st.text_input("Respuesta", key="new_user_resp")
             
-            if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
+            if st.button("Crear Cuenta", use_container_width=True, type="primary"):
                 if all([nuevo_u, nuevo_p, preg_u, resp_u]):
                     auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
                     st.success(f"Usuario {nuevo_u} creado correctamente.")
@@ -166,19 +167,19 @@ def render_configuracion():
                 else:
                     st.warning("Completar todos los campos para el registro.")
 
-    with tab_lista:
+    with tab_u2:
         lista_users = auth.listar_usuarios()
         if lista_users:
             st.write(f"Total de usuarios: **{len(lista_users)}**")
             
             for user in lista_users:
-               
+                # Usamos un container para agrupar visualmente cada fila
                 with st.container(border=True):
                     c1, c2 = st.columns([4, 1])
                     with c1:
                         st.markdown(f"**Usuario:** `{user}`")
                     with c2:
-                        
+                        # Evitamos que se elimine a sí mismo si tenemos el dato en session_state
                         es_mismo_usuario = st.session_state.get('usuario') == user
                         
                         if st.button("🗑️", key=f"btn_del_{user}", help=f"Eliminar a {user}", disabled=es_mismo_usuario):
