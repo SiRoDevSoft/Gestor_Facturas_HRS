@@ -148,46 +148,46 @@ def render_configuracion():
         st.session_state.expander_abierto = False
 
     tab_alta, tab_lista = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
-    with st.expander("Formulario de Registro", expanded=st.session_state.expander_abierto):
+    with st.expander("Formulario de Registro", expanded=True):
             col_u1, col_u2 = st.columns(2)
             with col_u1:
-                nuevo_u = st.text_input("Nombre de Usuario", key="u_reg_name")
-                nuevo_p = st.text_input("Contraseña", type="password", key="u_reg_pass")
+                nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
+                nuevo_p = st.text_input("Contraseña", type="password", key="new_user_pass")
             with col_u2:
-                preg_u = st.text_input("Pregunta de Seguridad", key="u_reg_preg")
-                resp_u = st.text_input("Respuesta", key="u_reg_resp")
+                preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
+                resp_u = st.text_input("Respuesta", key="new_user_resp")
             
-            if st.button("Crear Cuenta", use_container_width=True, type="primary"):
+            if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
                 if all([nuevo_u, nuevo_p, preg_u, resp_u]):
-                    # 1. Registramos en la base de datos
                     auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
-                    
-                    # 2. LA CLAVE: Cambiamos el estado a Falso para que se contraiga
-                    st.session_state.expander_abierto = False
-                    
-                    st.success(f"¡Usuario {nuevo_u} creado correctamente!")
+                    st.success(f"Usuario {nuevo_u} creado correctamente.")
                     sleep(1)
                     st.rerun()
                 else:
-                    st.warning("Completar todos los campos.")
-        
-            # Agregamos un botón simple para abrir el formulario si está cerrado
-            if not st.session_state.expander_abierto:
-                if st.button("➕ Abrir Formulario de Registro"):
-                    st.session_state.expander_abierto = True
-                    st.rerun()
+                    st.warning("Completar todos los campos para el registro.")
 
     with tab_lista:
-        # Aquí mantenemos la lógica de listar_usuarios() que ya teníamos
-        usuarios_db = auth.listar_usuarios()
-        if usuarios_db:
-            for u in usuarios_db:
+        lista_users = auth.listar_usuarios()
+        if lista_users:
+            st.write(f"Total de usuarios: **{len(lista_users)}**")
+            
+            for user in lista_users:
+               
                 with st.container(border=True):
-                    c1, c2 = st.columns([5, 1])
-                    c1.write(f"👤 **{u}**")
-                    if c2.button("🗑️", key=f"del_final_{u}"):
-                        auth.eliminar_usuario(u)
-                        st.rerun()
+                    c1, c2 = st.columns([4, 1])
+                    with c1:
+                        st.markdown(f"**Usuario:** `{user}`")
+                    with c2:
+                        
+                        es_mismo_usuario = st.session_state.get('usuario') == user
+                        
+                        if st.button("🗑️", key=f"btn_del_{user}", help=f"Eliminar a {user}", disabled=es_mismo_usuario):
+                            auth.eliminar_usuario(user)
+                            st.toast(f"Usuario {user} eliminado.")
+                            sleep(1)
+                            st.rerun()
+        else:
+            st.info("No hay usuarios registrados en el sistema.")
 
 
     # --- SIDEBAR: GRUPOS Y CATEGORÍAS ---
