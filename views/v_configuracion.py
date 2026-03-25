@@ -144,66 +144,54 @@ def render_configuracion():
     # --- SECCIÓN C: GESTIÓN DE USUARIOS (ACCESO AL SISTEMA) ---
     
     st.subheader("Administración de Accesos")
-    
-    tab_u1, tab_u2 = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
-    # # --- PRUEBA DE CONTROL ---
-    # st.error("### 🔍 MÓDULO DE CONTROL DE ACCESOS V2")
-    
-    # auth_admin = AuthManager()
-    # lista = auth_admin.listar_usuarios()
-    
-    # st.write(f"Usuarios detectados en DB: **{lista}**")
-    
-    # if lista:
-    #     for u in lista:
-    #         col_a, col_b = st.columns([4, 1])
-    #         col_a.write(f"👤 {u}")
-    #         if col_b.button("Borrar", key=f"btn_test_{u}"):
-    #             auth_admin.eliminar_usuario(u)
-    #             st.rerun()
-    # st.divider()
+    if "u_nombre" not in st.session_state: st.session_state.u_nombre = ""
+    if "u_pass" not in st.session_state: st.session_state.u_pass = ""
 
-    with tab_u1:
-        with st.expander("Formulario de Registro", expanded=True):
-            col_u1, col_u2 = st.columns(2)
-            with col_u1:
-                nuevo_u = st.text_input("Nombre de Usuario", key="new_user_name")
-                nuevo_p = st.text_input("Contraseña", type="password", key="new_user_pass")
-            with col_u2:
-                preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
-                resp_u = st.text_input("Respuesta", key="new_user_resp")
-            
-            if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
-                if all([nuevo_u, nuevo_p, preg_u, resp_u]):
-                    auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
-                    st.success(f"Usuario {nuevo_u} creado correctamente.")
-                    sleep(1)
-                    st.rerun()
-                else:
-                    st.warning("Completar todos los campos para el registro.")
+    tab_alta, tab_lista = st.tabs(["📝Registrar Nuevo", "📋 Gestionar Existentes"])
+    with tab_alta:
+            with st.expander("Formulario de Alta", expanded=True):
+                col_u1, col_u2 = st.columns(2)
+                with col_u1:
+                    nuevo_u = st.text_input("Nombre de Usuario", key="u_nombre")
+                    nuevo_p = st.text_input("Contraseña", type="password", key="u_pass")
+                with col_u2:
+                    preg_u = st.text_input("Pregunta de Seguridad", key="u_preg")
+                    resp_u = st.text_input("Respuesta", key="u_resp")
+                
+                if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
+                    if all([nuevo_u, nuevo_p, preg_u, resp_u]):
+                        auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
+                        # Limpiamos para el próximo
+                        st.session_state.u_nombre = ""
+                        st.session_state.u_pass = ""
+                        st.success(f"¡Usuario {nuevo_u} creado!")
+                        sleep(1)
+                        st.rerun()
+                    else:
+                        st.warning("Faltan datos para el registro.")
 
-    with tab_u2:
-        lista_users = auth.listar_usuarios()
-        if lista_users:
-            st.write(f"Total de usuarios: **{len(lista_users)}**")
-            
-            for user in lista_users:
-                # Usamos un container para agrupar visualmente cada fila
-                with st.container(border=True):
-                    c1, c2 = st.columns([4, 1])
-                    with c1:
-                        st.markdown(f"**Usuario:** `{user}`")
-                    with c2:
-                        # Evitamos que se elimine a sí mismo si tenemos el dato en session_state
-                        es_mismo_usuario = st.session_state.get('usuario') == user
+    with tab_lista:
+            usuarios_db = auth.listar_usuarios()
+            if usuarios_db:
+                st.write(f"Hay **{len(usuarios_db)}** personas con acceso al sistema.")
+                
+                for u in usuarios_db:
+                    # Creamos una "tarjeta" visual para cada usuario
+                    with st.container(border=True):
+                        c1, c2 = st.columns([5, 1])
+                        c1.markdown(f"**Identificador:** `{u}`")
                         
-                        if st.button("🗑️", key=f"btn_del_{user}", help=f"Eliminar a {user}", disabled=es_mismo_usuario):
-                            auth.eliminar_usuario(user)
-                            st.toast(f"Usuario {user} eliminado.")
+                        # Seguridad: No dejar que el usuario actual se borre a sí mismo
+                        # (Asumiendo que guardás el logueado en st.session_state['usuario'])
+                        soy_yo = st.session_state.get('usuario') == u
+                        
+                        if c2.button("🗑️", key=f"del_{u}", help=f"Eliminar acceso a {u}", disabled=soy_yo):
+                            auth.eliminar_usuario(u)
+                            st.toast(f"Acceso revocado para {u}")
                             sleep(1)
                             st.rerun()
-        else:
-            st.info("No hay usuarios registrados en el sistema.")
+            else:
+                st.info("No hay usuarios registrados fuera del administrador inicial.")
 
 
 
