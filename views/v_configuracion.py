@@ -146,6 +146,22 @@ def render_configuracion():
     st.subheader("Administración de Accesos")
     
     tab_u1, tab_u2 = st.tabs(["➕ Registrar Nuevo", "🔐 Gestionar Existentes"])
+    # --- PRUEBA DE CONTROL ---
+    st.error("### 🔍 MÓDULO DE CONTROL DE ACCESOS V2")
+    
+    auth_admin = AuthManager()
+    lista = auth_admin.listar_usuarios()
+    
+    st.write(f"Usuarios detectados en DB: **{lista}**")
+    
+    if lista:
+        for u in lista:
+            col_a, col_b = st.columns([4, 1])
+            col_a.write(f"👤 {u}")
+            if col_b.button("Borrar", key=f"btn_test_{u}"):
+                auth_admin.eliminar_usuario(u)
+                st.rerun()
+    st.divider()
 
     with tab_u1:
         with st.expander("Formulario de Registro", expanded=True):
