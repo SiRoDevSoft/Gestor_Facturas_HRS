@@ -101,7 +101,7 @@ def render_configuracion():
                 idx_c = CATEGORIAS_VALIDAS.index(c_sug) if c_sug in CATEGORIAS_VALIDAS else 0
                 cat_f = st.selectbox("Asignar a Categoría", CATEGORIAS_VALIDAS, index=idx_c)
 
-            if st.form_submit_button("💾 GUARDAR CAMBIOS", type="primary"):
+            if st.form_submit_button("💾 GUARDAR CAMBIOS", type="secondary"):
                 if linea_f and nombre_f:
                     config[linea_f] = {
                         "nombre": nombre_f.upper().strip(),
@@ -158,7 +158,7 @@ def render_configuracion():
                 preg_u = st.text_input("Pregunta de Seguridad", key="new_user_preg")
                 resp_u = st.text_input("Respuesta", key="new_user_resp")
             
-            if st.button("Crear Cuenta", use_container_width=True, type="primary"):
+            if st.button("Crear Cuenta", use_container_width=True, type="secondary"):
                 if all([nuevo_u, nuevo_p, preg_u, resp_u]):
                     auth.registrar_usuario(nuevo_u, nuevo_p, preg_u, resp_u)
                     st.success(f"Usuario {nuevo_u} creado correctamente.")
