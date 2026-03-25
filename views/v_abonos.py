@@ -175,7 +175,7 @@ def render_abonos():
         for i, grupo in enumerate(externos):
             df_g = df_detalle[df_detalle['grupo'] == grupo].copy().sort_values("nombre")
             total_g = df_g['precio_con_markup'].sum()
-
+            nombre_columna_total = "Total" if grupo == "PIEDECASAS" else "Total c/Imp"
             # Validación de índice segura
             target_col = cols[i % n_cols]
             
@@ -186,9 +186,12 @@ def render_abonos():
                     
                     df_view = df_g[["nombre", "linea", "costo_fijo", "costo_variable", "costo_juegos", "precio_con_markup"]].rename(
                         columns={
-                            "nombre": "Usuario", "linea": "Línea", "costo_fijo": "Fijo", 
-                            "costo_variable": "Variable", "costo_juegos": "Juegos", 
-                            "precio_con_markup": "Total c/Imp"
+                            "nombre": "Usuario",
+                             "linea": "Línea",
+                              "costo_fijo": "Fijo", 
+                            "costo_variable": "Variable",
+                             "costo_juegos": "Juegos", 
+                            "precio_con_markup": nombre_columna_total
                         }
                     )
                     
