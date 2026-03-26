@@ -43,20 +43,25 @@ def render_login(auth):
             st.markdown("<br>", unsafe_allow_html=True)
            
             if st.button("Entrar al Sistema", use_container_width=True, type="secondary"):
-                if not u or not p:
-                    st.warning("Por favor, completa todos los campos.")
+                if u and p:
+                    st.session_state.loading = True
+                    st.rerun() # Un solo rerun para bloquear la UI antes de ir a la DB
                 else:
-                    with st.spinner("Verificando credenciales en la nube..."):
-                        
-                        es_valido = auth.verificar_login(u, p)
-                        
-                        if es_valido:
-                            st.session_state.autenticado = True
-                            st.success("Acceso concedido. Iniciando sesión...")
-                            time.sleep(1) 
-                            st.rerun()
-                        else:
-                            st.error("Credenciales incorrectas. Verificá usuario y clave.")
+                    st.warning("Completar campos.")
+
+            # Lógica de verificación (Solo ocurre si el botón fue presionado)
+            if st.session_state.loading:
+                with st.spinner("Conectando con el servidor..."):
+                    if auth.verificar_login(u, p):
+                        st.session_state.autenticado = True
+                        st.session_state.loading = False
+                        st.success("Acceso correcto.")
+                        time.sleep(0.5)
+                        st.rerun()
+                    else:
+                        st.error("Usuario o clave incorrectos.")
+                        st.session_state.loading = False
+                        st.rerun()
 
         with tab2:
             st.info("Ingresá tu usuario para ver la pregunta de seguridad.")
