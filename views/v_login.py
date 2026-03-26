@@ -3,7 +3,8 @@ import os
 import time
 
 def render_login(auth):
-    # --- 1. INICIALIZACIÓN DE ESTADO (Evita el AttributeError) ---
+    # --- 1. INICIALIZACIÓN DE ESTADO ---
+    # Esto evita el AttributeError y prepara el terreno para el reintento
     if "loading" not in st.session_state:
         st.session_state.loading = False
 
@@ -37,34 +38,37 @@ def render_login(auth):
         tab1, tab2 = st.tabs(["Ingresar", "Recuperar"])
         
         with tab1:
-            # Deshabilitamos los inputs mientras carga para que no cambien nada
+            # Los inputs se bloquean mientras validamos (UX limpia)
             u = st.text_input("Usuario", placeholder="Tu nombre de usuario", key="login_user", disabled=st.session_state.loading)
             p = st.text_input("Clave", type="password", placeholder="Tu contraseña", key="login_pass", disabled=st.session_state.loading)
             
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # El botón se deshabilita si loading es True
+            # El botón se deshabilita si loading es True para evitar spam
             if st.button("Entrar al Sistema", use_container_width=True, type="secondary", disabled=st.session_state.loading):
                 if u and p:
                     st.session_state.loading = True
                     st.rerun() 
                 else:
-                    st.warning("Por favor, completar todos los campos.")
+                    st.warning("Por favor, completa todos los campos.")
 
-            # --- LÓGICA DE VERIFICACIÓN ---
+            # --- LÓGICA DE PROCESAMIENTO ---
             if st.session_state.loading:
-                with st.spinner("Conectando con el servidor..."):
-                    # Aquí es donde el sistema se comunica con Neon (San Pablo)
-                    if auth.verificar_login(u, p):
+                with st.spinner("Validando credenciales..."):
+                    # Llamada a Neon (San Pablo)
+                    es_valido = auth.verificar_login(u, p)
+                    
+                    if es_valido:
                         st.session_state.autenticado = True
-                        st.session_state.loading = False
-                        st.success("Acceso correcto.")
+                        st.session_state.loading = False # Reset para éxito
+                        st.success("Acceso correcto. Cargando sistema...")
                         time.sleep(0.5)
                         st.rerun()
                     else:
-                        st.error("Usuario o clave incorrectos.")
-                        st.session_state.loading = False
-                        # No hacemos rerun aquí para que el mensaje de error permanezca en pantalla
+                        # --- CLAVE AQUÍ: Si falla, reseteamos el loading ---
+                        st.error("Usuario o clave incorrectos. Intentá de nuevo.")
+                        st.session_state.loading = False 
+                        # Al terminar este bloque, Streamlit refresca y el botón vuelve a estar activo
         
         with tab2:
             st.info("Ingresá tu usuario para ver la pregunta de seguridad.")
