@@ -74,7 +74,13 @@ class AuthManager:
             if "postgresql" in self.url and "+psycopg2" not in self.url:
                 self.url = self.url.replace("postgresql://", "postgresql+psycopg2://")
             
-            self.engine = create_engine(self.url, pool_pre_ping=True)
+            self.engine = create_engine(
+                self.url,
+                pool_size=5, 
+                max_overflow=10, 
+                pool_pre_ping=True,
+                pool_recycle=300 
+       )
         except Exception as e:
             st.error(f"🚨 Error en AuthDB: {str(e)}")
             raise e
