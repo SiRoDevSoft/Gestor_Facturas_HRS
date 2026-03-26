@@ -8,6 +8,24 @@ Sistema de auditoría y gestión de facturación de telefonía móvil (Movistar)
 * **Re-mapeo Dinámico:** El sistema no depende de datos estáticos en la DB. Cruza la historia de consumos (SQLite) con la configuración actual de dueños y grupos (JSON) en tiempo real mediante **Pandas**.
 * **Generación de Comprobantes:** Creación automatizada de boletos de cobro por grupo (KOPRAM, LUCARELLI, TERCEROS, etc.).
 * **Gestión de Flota:** Sidebar interactivo para altas, bajas y cambios de categoría de líneas sin tocar el código.
+## 🚀 Características Principales
+* **Auditoría de Facturas:** Procesamiento y limpieza de datos de facturación (Movistar/Terceros).
+* **Boletos de Cobro:** Generación automatizada de comprobantes en PDF con recargos configurables.
+* **Pronóstico de Flujo:** Visualización de proyecciones económicas y límites operativos.
+* **Persistencia en la Nube:** Gestión de usuarios y configuración mediante **PostgreSQL (Neon.tech)**.
+* **Seguridad:** Sistema de autenticación con hashing SHA-256 y recuperación mediante preguntas de seguridad.
+
+## 🛠️ Stack Tecnológico
+* **Lenguaje:** Python 3.13+
+* **Frontend:** Streamlit (UI Reactiva)
+* **Base de Datos:** PostgreSQL (Vía SQLAlchemy + psycopg2)
+* **Generación de Documentos:** FPDF2 / Pandas
+* **Deployment:** Streamlit Cloud
+
+## 📋 Configuración de Entorno (Secrets)
+Para que el sistema funcione en la nube, es necesario configurar las siguientes variables en los **Secrets** de Streamlit:
+*******************************************************************************
+
 
 ## 🛠️ Estructura del Proyecto
 
@@ -26,7 +44,6 @@ HIERROSAN_APP/
 ---
 ## 🌐 Contacto y Desarrollo
 
-**Desarrollado por [SiRoDevSoft](https://sirodevsoft.github.io)** *Soluciones de Software a Medida | Especialistas en Gestión de Datos*
-
-[![Website](https://img.shields.io/badge/Website-SiRoDevSoft-blue?style=for-the-badge&logo=google-chrome)]([https://sirodevsoft.github.io])
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/silviojonrojas)
+✒️ Desarrollado por
+SiRoDevSoft - Soluciones de Software a medida.
+San Rafael, Mendoza, Argentina.
